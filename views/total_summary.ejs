@@ -20,7 +20,7 @@
             <h1>التقرير التحليلي الشامل</h1>
             <p style="color: var(--text-secondary);">تحليل تراكمي لكافة الحملات التسويقية وأداء الموظفين</p>
         </div>
-        <button onclick="window.print()" class="btn-premium">
+        <button onclick="printStandardReport()" class="btn-premium">
             <i class="fas fa-print"></i> &nbsp; استخراج نسخة للطباعة
         </button>
     </div>
@@ -114,46 +114,56 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Hide print elements by default on screen */
+        .only-print, .only-print-analytics, .standard-print { display: none; }
+
         @media screen {
-            .only-print-analytics, .standard-print, .only-print { display: none !important; }
-            
-            body:not(.print-mode-analytics) .only-print-analytics { display: none !important; }
-            body:not(.print-mode-standard) .standard-print { display: none !important; }
-            
-            /* Make it visible but at the bottom during preparation */
+            /* Make it visible but off-screen during preparation for Chart.js to render */
             body.print-mode-analytics .only-print-analytics { 
                 display: block !important; 
                 position: absolute; 
-                left: -9999px; /* Off-screen but visible for rendering */
+                left: -9999px;
                 width: 1200px;
             }
         }
+
         @media print {
             /* Basic resets */
-            .no-print, #printOverlay, .sidebar, .mobile-header { display: none !important; }
-            
-            /* Analytical Mode Specifics */
-            body.print-mode-analytics .main-content { 
-                margin: 0 !important; 
-                padding: 0 !important; 
-                width: 100% !important; 
-                display: block !important; /* Ensure it stays visible */
+            .no-print, #printOverlay, .sidebar, .mobile-header, .main-content > *:not(.only-print):not(.only-print-analytics):not(.standard-print) { 
+                display: none !important; 
             }
             
+            /* Main Content Reset */
+            .main-content { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                width: 100% !important;
+                display: block !important;
+            }
+
+            /* Standard Mode (Default) */
+            body.print-mode-standard .only-print,
+            body.print-mode-standard .standard-print,
+            body:not(.print-mode-analytics) .only-print,
+            body:not(.print-mode-analytics) .standard-print { 
+                display: block !important; 
+            }
+
+            /* Analytical Mode */
             body.print-mode-analytics .only-print-analytics { 
                 display: block !important; 
                 visibility: visible !important;
-            }
-            
-            body.print-mode-analytics .standard-print,
-            body.print-mode-analytics .no-print { 
-                display: none !important; 
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white;
             }
 
             /* Page optimization */
             @page { 
                 size: A4 landscape; 
-                margin: 1cm; 
+                margin: 0.5cm; 
             }
         }
     </style>
@@ -201,8 +211,8 @@
             const overlay = document.getElementById('printOverlay');
             overlay.style.display = 'flex';
             
-            // Allow DOM to update and show overlay
-            await new Promise(r => setTimeout(r, 100));
+            // Quick sync for overlay
+            await new Promise(r => setTimeout(r, 50));
 
             const container = document.getElementById('analyticalPrintView');
             document.body.classList.add('print-mode-analytics');
@@ -211,14 +221,16 @@
             Object.values(charts).forEach(chart => chart.destroy());
 
             // Data Preparation
+            const jsGrandTotal = <%= grandTotal %>;
             const statusData = [
-                <%= totalFresh %>, <%= totalHot %>, <%= totalMeeting %>, <%= totalCallback %>, 
-                <%= Math.max(0, grandTotal - (totalFresh + totalHot + totalMeeting + totalCallback)) %>
+                <%= totalFresh %>, <%= totalHot %>, <%= totalMeeting + totalSchedule %>, <%= totalCallback %>, 
+                <%= totalFollowUp + totalLow %>, <%= totalProspect %>, <%= totalEOI %>, <%= totalDone %>,
+                <%= Math.max(0, grandTotal - (totalFresh + totalHot + totalMeeting + totalSchedule + totalCallback + totalFollowUp + totalLow + totalProspect + totalEOI + totalDone)) %>
             ];
-            const salesmenData = <%- JSON.stringify(summary.slice(0, 5)) %>;
-            const channelDataRaw = <%- JSON.stringify(campaignSummary) %>;
-            const channels = {};
-            channelDataRaw.forEach(c => { channels[c.channel] = (channels[c.channel] || 0) + c.total; });
+            const statusLabels = ['Fresh', 'Hot Case', 'Meeting', 'Call Back', 'Follow Up', 'Prospect', 'EOI', 'Done Deal', 'غير مهتم/خطأ'];
+            const salesmenData = <%- JSON.stringify(summary) %>;
+            // Removed channelDataRaw as per user request
+
 
             const chartOptions = { 
                 animation: false, 
@@ -230,59 +242,126 @@
             };
 
             // Status Chart
+            // Status Chart with Data Labels Plugin
             charts.status = new Chart(document.getElementById('statusChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Fresh', 'Hot Case', 'Meeting', 'Call Back', 'أخرى'],
+                    labels: statusLabels,
                     datasets: [{
                         data: statusData,
-                        backgroundColor: ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#e2e8f0'],
+                        backgroundColor: [
+                            '#10b981', '#ef4444', '#3b82f6', '#f59e0b', 
+                            '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#cbd5e1'
+                        ],
                         borderWidth: 2, borderColor: '#fff'
                     }]
                 },
-                options: { ...chartOptions, plugins: { legend: { position: 'bottom' } } }
+                options: { 
+                    ...chartOptions, 
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                boxWidth: 10, 
+                                font: { size: 9 },
+                                generateLabels: (chart) => {
+                                    const data = chart.data;
+                                    return data.labels.map((label, i) => ({
+                                        text: `${label}: ${data.datasets[0].data[i]} (${((data.datasets[0].data[i] / jsGrandTotal) * 100).toFixed(1)}%)`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].borderColor,
+                                        lineWidth: data.datasets[0].borderWidth,
+                                        hidden: false,
+                                        index: i
+                                    }));
+                                }
+                            } 
+                        },
+                    } 
+                },
+                plugins: [{
+                    id: 'customLabels',
+                    afterDraw: (chart) => {
+                        const ctx = chart.ctx;
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((element, index) => {
+                                const data = dataset.data[index];
+                                const percentageVal = (data / jsGrandTotal) * 100;
+                                if (data === 0 || percentageVal < 4) return; // Hide labels for < 4% to avoid overlap
+                                const percentage = percentageVal.toFixed(1) + '%';
+                                
+                                const { x, y } = element.tooltipPosition();
+                                ctx.fillStyle = '#000';
+                                ctx.font = 'bold 10px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(`${data} (${percentage})`, x, y);
+                            });
+                        });
+                    }
+                }]
             });
 
             // Salesman Chart
             charts.salesman = new Chart(document.getElementById('salesmanChart'), {
                 type: 'bar',
                 data: {
-                    labels: salesmenData.map(s => s.salesman_name),
+                    labels: salesmenData.map(s => s.salesman_name || 'غير معروف'),
                     datasets: [{
+                        label: 'عدد العملاء',
                         data: salesmenData.map(s => s.total),
                         backgroundColor: '#3b82f6',
-                        borderRadius: 5
+                        borderRadius: 4
                     }]
                 },
                 options: { 
-                    ...chartOptions, indexAxis: 'y', 
-                    plugins: { legend: { display: false } },
+                    ...chartOptions, 
+                    indexAxis: 'y', 
+                    layout: {
+                        padding: {
+                            left: 140, // Increased padding to ensure names are visible
+                            right: 20,
+                            top: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
                     scales: { 
-                        x: { grid: { display: false }, ticks: { color: '#000', font: { weight: 'bold' } } },
-                        y: { grid: { display: false }, ticks: { color: '#000', font: { weight: 'bold' } } }
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#000', font: { weight: 'bold', size: 11 } } 
+                        },
+                        y: { 
+                            grid: { display: false }, 
+                            ticks: { 
+                                color: '#000', 
+                                font: { weight: '900', size: 12 }, // Extra bold and slightly larger
+                                autoSkip: false,
+                                crossAlign: 'far' // Ensure text aligns correctly for names
+                            } 
+                        }
                     }
                 }
             });
 
-            // Channel Chart
-            charts.channel = new Chart(document.getElementById('channelChart'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(channels),
-                    datasets: [{
-                        data: Object.values(channels),
-                        backgroundColor: ['#6366f1', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e']
-                    }]
-                },
-                options: { ...chartOptions, plugins: { legend: { position: 'right' } } }
-            });
+            // Removed channel chart creation as per user request
 
-            // Final Wait for Rendering
+            // Final Wait for Rendering (Reduced since animations are OFF)
             setTimeout(() => {
                 window.print();
                 document.body.classList.remove('print-mode-analytics');
                 overlay.style.display = 'none';
-            }, 2000);
+            }, 500);
+        }
+
+        function printStandardReport() {
+            document.body.classList.add('print-mode-standard');
+            window.print();
+            document.body.classList.remove('print-mode-standard');
         }
     </script>
 
@@ -338,7 +417,7 @@
 </div>
 
 <div style="display: flex; gap: 10px; margin-bottom: 2rem;" class="no-print">
-    <button onclick="window.print()" class="btn btn-premium" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border);">
+    <button onclick="printStandardReport()" class="btn btn-premium" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border);">
         <i class="fas fa-print"></i> طباعة الجدول التقليدي
     </button>
     <button onclick="printAnalyticalReport()" class="btn btn-premium" style="background: var(--accent-gradient); color: white;">
@@ -348,65 +427,58 @@
 
 <!-- Analytical Print View (Hidden on Web) -->
 <div class="only-print-analytics" id="analyticalPrintView">
-    <div class="print-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent-color); padding-bottom: 1.5rem; margin-bottom: 2.5rem;">
+    <div class="print-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 15px;">
         <div style="text-align: right;">
-            <img src="/logo.webp" alt="Logo" style="height: 75px; margin-bottom: 0.5rem;">
-            <h1 style="font-weight: 900; margin: 0; color: #000; letter-spacing: 1px; font-size: 2.5rem;">FAIR INTELLIGENCE</h1>
-            <p style="margin: 0; font-size: 1rem; color: var(--accent-color); text-transform: uppercase; font-weight: 800;">Executive Sales Performance Analytics</p>
+            <img src="/logo.webp" alt="Logo" style="height: 60px; margin-bottom: 0.2rem;">
+            <h1 style="font-weight: 900; margin: 0; color: #000; letter-spacing: 1px; font-size: 1.8rem;">FAIR INTELLIGENCE</h1>
+            <p style="margin: 0; font-size: 0.8rem; color: var(--accent-color); text-transform: uppercase; font-weight: 800;">Executive Sales Performance Analytics</p>
         </div>
-        <div style="text-align: left; color: #000; font-size: 1rem;">
+        <div style="text-align: left; color: #000; font-size: 0.9rem;">
             <p style="margin: 0; font-weight: bold;">تاريخ التقرير: <%= new Date().toLocaleDateString('ar-EG', { dateStyle: 'full' }) %></p>
             <p style="margin: 0;">نطاق البيانات: <%= filters.startDate || 'البداية' %> إلى <%= filters.endDate || 'اليوم' %></p>
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 2rem;">
-        <div class="card" style="background: white; border: 1px solid #e2e8f0; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <h3 style="color: #1e293b; margin-bottom: 20px; text-align: center; border-bottom: 2px solid #10b981; padding-bottom: 12px; font-weight: 800; font-size: 1.2rem;">توزيع حالات العملاء (Status)</h3>
-            <div style="height: 280px; position: relative;">
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 15px; margin-bottom: 15px;">
+        <div class="card" style="background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <h3 style="color: #1e293b; margin-bottom: 10px; text-align: center; border-bottom: 2px solid #10b981; padding-bottom: 5px; font-weight: 800; font-size: 1rem;">توزيع حالات العملاء</h3>
+            <div style="height: 240px; position: relative;">
                 <canvas id="statusChart"></canvas>
             </div>
         </div>
-        <div class="card" style="background: white; border: 1px solid #e2e8f0; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <h3 style="color: #1e293b; margin-bottom: 20px; text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 12px; font-weight: 800; font-size: 1.2rem;">أداء أفضل 5 موظفين (Top Performers)</h3>
-            <div style="height: 280px; position: relative;">
+        <div class="card" style="background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <h3 style="color: #1e293b; margin-bottom: 10px; text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 5px; font-weight: 800; font-size: 1rem;">أداء الموظفين (بالأسماء)</h3>
+            <div style="height: 240px; position: relative;">
                 <canvas id="salesmanChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr; gap: 40px;">
-        <div class="card" style="background: white; border: 1px solid #ddd; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-            <h3 style="color: #000; margin-bottom: 25px; text-align: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; font-weight: 800;">توزيع العملاء حسب القناة (Marketing Channels)</h3>
-            <div style="height: 350px; position: relative;">
-                <canvas id="channelChart"></canvas>
+
+
+    <div style="margin-top: 1rem; border-top: 2px solid var(--accent-color); padding-top: 10px;">
+        <h3 style="color: #1e293b; margin-bottom: 8px; font-weight: 800; font-size: 1rem;">خلاصة الأرقام التشغيلية:</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+            <div style="border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #64748b; font-size: 0.75rem; font-weight: bold;">إجمالي العملاء</p>
+                <h4 style="margin: 2px 0 0; color: #0f172a; font-size: 1.1rem; font-weight: 900;"><%= grandTotal %></h4>
+            </div>
+            <div style="border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #10b981; font-size: 0.75rem; font-weight: bold;">Fresh</p>
+                <h4 style="margin: 2px 0 0; color: #0f172a; font-size: 1.1rem; font-weight: 900;"><%= totalFresh %></h4>
+            </div>
+            <div style="border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #ef4444; font-size: 0.75rem; font-weight: bold;">Hot Case</p>
+                <h4 style="margin: 2px 0 0; color: #0f172a; font-size: 1.1rem; font-weight: 900;"><%= totalHot %></h4>
+            </div>
+            <div style="border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #3b82f6; font-size: 0.75rem; font-weight: bold;">Meetings</p>
+                <h4 style="margin: 2px 0 0; color: #0f172a; font-size: 1.1rem; font-weight: 900;"><%= totalMeeting %></h4>
             </div>
         </div>
     </div>
 
-    <div style="margin-top: 3rem; border-top: 2px solid var(--accent-color); padding-top: 2rem;">
-        <h3 style="color: #1e293b; margin-bottom: 1.5rem; font-weight: 800; font-size: 1.3rem;">خلاصة الأرقام التشغيلية:</h3>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
-            <div style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; text-align: center;">
-                <p style="margin: 0; color: #64748b; font-size: 0.9rem; font-weight: bold;">إجمالي العملاء</p>
-                <h4 style="margin: 5px 0 0; color: #0f172a; font-size: 1.5rem; font-weight: 900;"><%= grandTotal %></h4>
-            </div>
-            <div style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; text-align: center;">
-                <p style="margin: 0; color: #10b981; font-size: 0.9rem; font-weight: bold;">Fresh</p>
-                <h4 style="margin: 5px 0 0; color: #0f172a; font-size: 1.5rem; font-weight: 900;"><%= totalFresh %></h4>
-            </div>
-            <div style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; text-align: center;">
-                <p style="margin: 0; color: #ef4444; font-size: 0.9rem; font-weight: bold;">Hot Case</p>
-                <h4 style="margin: 5px 0 0; color: #0f172a; font-size: 1.5rem; font-weight: 900;"><%= totalHot %></h4>
-            </div>
-            <div style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; text-align: center;">
-                <p style="margin: 0; color: #3b82f6; font-size: 0.9rem; font-weight: bold;">Meetings</p>
-                <h4 style="margin: 5px 0 0; color: #0f172a; font-size: 1.5rem; font-weight: 900;"><%= totalMeeting %></h4>
-            </div>
-        </div>
-    </div>
-
-    <div style="margin-top: 4rem; text-align: center; border-top: 1px solid #eee; padding-top: 1rem; color: #94a3b8; font-size: 0.8rem;">
+    <div style="margin-top: 1rem; text-align: center; border-top: 1px solid #eee; padding-top: 0.5rem; color: #94a3b8; font-size: 0.75rem;">
         <p>تم استخراج هذا التقرير آلياً بواسطة نظام Fair Intelligence - جميع الحقوق محفوظة © <%= new Date().getFullYear() %></p>
     </div>
 </div>
@@ -518,7 +590,7 @@
             <tbody>
                 <% summary.forEach(s => { %>
                 <tr>
-                    <td class="text-right"><%= s.salesman_name %></td>
+                    <td class="text-right"><%= s.salesman_name || 'غير معروف' %></td>
                     <td><%= s.my_fresh || '' %></td>
                     <td><%= s.callback || '' %></td>
                     <td><%= s.follow_up || '' %></td>
@@ -557,10 +629,4 @@
     </div>
 </div>
 
-<style>
-    .only-print { display: none; }
-    @media print {
-        .no-print { display: none !important; }
-        .only-print { display: block !important; }
-    }
-</style>
+

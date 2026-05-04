@@ -192,7 +192,7 @@
             <tbody>
                 <% summary.forEach(s => { %>
                 <tr>
-                    <td class="text-right"><%= s.salesman_name %></td>
+                    <td class="text-right"><%= s.salesman_name || 'غير معروف' %></td>
                     <td><%= s.my_fresh || '' %></td>
                     <td><%= s.callback || '' %></td>
                     <td><%= s.follow_up || '' %></td>

@@ -35,19 +35,19 @@ router.post('/upload', upload.array('reports'), (req, res) => {
         for (const lead of data) {
           insertLead.run(
             uploadId,
-            lead['Request Creation Date'] || lead['تاريخ الإنشاء'],
-            lead['Salesman Name'] || lead['اسم البائع'],
-            lead['State'] || lead['الحالة'],
-            lead['Last Action'] || lead['آخر إجراء'],
-            lead['Note'] || lead['ملاحظة'],
-            lead['Name'] || lead['الاسم'],
-            lead['Email'] || lead['البريد الإلكتروني'],
-            lead['Mobile'] || lead['الموبايل'],
-            lead['Unit-Type'] || lead['نوع الوحدة'],
-            lead['Campaign'] || lead['الحملة'],
-            lead['Channel'] || lead['القناة'],
-            lead['Lead ID'] || lead['رقم العميل'],
-            lead['Next Action Date'] || lead['موعد الإجراء القادم']
+            lead['Request Creation Date'] || lead['تاريخ الإنشاء'] || '-',
+            lead['Salesman Name'] || lead['اسم البائع'] || 'غير معروف',
+            lead['State'] || lead['الحالة'] || 'جديد',
+            lead['Last Action'] || lead['آخر إجراء'] || '-',
+            lead['Note'] || lead['ملاحظة'] || '-',
+            lead['Name'] || lead['الاسم'] || 'بدون اسم',
+            lead['Email'] || lead['البريد الإلكتروني'] || '-',
+            lead['Mobile'] || lead['الموبايل'] || '-',
+            lead['Unit-Type'] || lead['نوع الوحدة'] || '-',
+            lead['Campaign'] || lead['الحملة'] || 'غير محددة',
+            lead['Channel'] || lead['القناة'] || 'غير محددة',
+            lead['Lead ID'] || lead['رقم العميل'] || '-',
+            lead['Next Action Date'] || lead['موعد الإجراء القادم'] || '-'
           );
         }
       }
