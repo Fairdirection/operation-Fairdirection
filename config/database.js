@@ -7,8 +7,11 @@ const dbPath = process.env.DATABASE_URL
 
 const db = new Database(dbPath);
 
-// Enable foreign keys
+// Enable foreign keys and optimize for production
 db.pragma('foreign_keys = ON');
+db.pragma('journal_mode = WAL'); // Better concurrency
+db.pragma('synchronous = NORMAL'); // Balance between safety and speed
+db.pragma('cache_size = 10000'); // Cache 10,000 pages for faster reads
 
 // Initialize schema
 db.exec(`
@@ -43,6 +46,21 @@ db.exec(`
     next_action_date TEXT,
     FOREIGN KEY (upload_id) REFERENCES uploads(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
+
+// Seed initial user if not exists
+const bcrypt = require('bcryptjs');
+const userExists = db.prepare('SELECT * FROM users WHERE username = ?').get('hanan');
+if (!userExists) {
+  const hashedPassword = bcrypt.hashSync('hanan2001', 10);
+  db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run('hanan', hashedPassword);
+}
 
 module.exports = db;
