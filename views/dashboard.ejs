@@ -1,0 +1,84 @@
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h1>نظرة عامة على الأداء</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">متابعة فورية لنتائج المبيعات وحالات العملاء</p>
+        </div>
+        <div style="background: var(--accent-gradient); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 0.9rem;">
+            عام 2026
+        </div>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div class="stat-label">إجمالي العملاء</div>
+            <div class="stat-value"><%= stats.totalLeads.toLocaleString() %></div>
+            <div style="color: #10b981; font-size: 0.8rem; font-weight: bold;">
+                <i class="fas fa-arrow-up"></i> +12% هذا الشهر
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-label">فريق المبيعات</div>
+            <div class="stat-value"><%= stats.totalSalesmen %></div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">موظف نشط</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-label">التقارير المرفوعة</div>
+            <div class="stat-value"><%= stats.totalReports %></div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">ملف إكسل</div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border);">
+        <h2 style="margin-bottom: 0;">أحدث العملاء في النظام</h2>
+        <a href="/reports/history" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1.5rem;">
+            <i class="fas fa-list-ul"></i> السجل الكامل
+        </a>
+    </div>
+    
+    <div style="padding: 1rem 2rem;">
+        <table>
+            <thead>
+                <tr>
+                    <th>تاريخ الإنشاء</th>
+                    <th>اسم العميل</th>
+                    <th>اسم البائع</th>
+                    <th>الحالة الحالية</th>
+                    <th>حملة التسويق</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% latestLeads.forEach(lead => { %>
+                <tr>
+                    <td style="font-size: 0.9rem; color: var(--text-secondary);"><%= lead.request_creation_date ? lead.request_creation_date.split(' ')[0] : '-' %></td>
+                    <td style="font-weight: 600;"><%= lead.name %></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--accent-color);">
+                                <%= lead.salesman_name.charAt(0) %>
+                            </div>
+                            <%= lead.salesman_name %>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="background: rgba(56, 189, 248, 0.1); color: var(--accent-color); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.2);">
+                            <%= lead.state %>
+                        </span>
+                    </td>
+                    <td style="font-size: 0.9rem;"><%= lead.campaign %></td>
+                </tr>
+                <% }) %>
+                <% if (latestLeads.length === 0) { %>
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.2;"></i>
+                        <p>لا توجد بيانات حالية. ابدأ برفع ملفات الإكسل.</p>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

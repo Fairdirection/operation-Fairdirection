@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fair Intelligence | منظومة ذكاء المبيعات</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="mobile-header no-print">
+        <img src="/logo.webp" alt="Logo" style="height: 35px;">
+        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem;">FAIR INTELLIGENCE</span>
+    </div>
+
+    <div class="sidebar no-print">
+        <div style="text-align: center; margin-bottom: 2.5rem; padding: 0 1rem;">
+            <img src="/logo.webp" alt="Logo" style="max-width: 140px; height: auto; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2));">
+            <h2 style="font-size: 1.2rem; margin-top: 1rem; letter-spacing: 2px; color: white; font-weight: 800;">FAIR INTELLIGENCE</h2>
+            <p style="font-size: 0.65rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 3px; margin-top: -5px;">Sales Alpha System</p>
+        </div>
+        <nav>
+            <a href="/" class="nav-link <%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>">
+                <i class="fas fa-grid-2"></i> <span>لوحة التحكم</span>
+            </a>
+            <a href="/upload" class="nav-link <%= typeof page !== 'undefined' && page === 'upload' ? 'active' : '' %>">
+                <i class="fas fa-plus-square"></i> <span>رفع تقارير</span>
+            </a>
+            <a href="/reports/history" class="nav-link <%= typeof page !== 'undefined' && page === 'history' ? 'active' : '' %>">
+                <i class="fas fa-folder-open"></i> <span>سجل الملفات</span>
+            </a>
+            <a href="/analytics/total" class="nav-link <%= typeof page !== 'undefined' && page === 'total' ? 'active' : '' %>">
+                <i class="fas fa-analytics"></i> <span>التقرير الشامل</span>
+            </a>
+        </nav>
+        
+        <div style="position: absolute; bottom: 2rem; left: 1.5rem; right: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--glass-border);">
+            <p style="color: var(--text-secondary); font-size: 0.75rem; text-align: center;">إصدار النظام v2.0</p>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <%- body %>
+    </div>
+</body>
+</html>

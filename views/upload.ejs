@@ -1,0 +1,118 @@
+<div class="card">
+    <h1>رفع تقارير مبيعات جديدة</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">يمكنك رفع ملف واحد أو عدة ملفات في وقت واحد. يدعم النظام ملفات الإكسل (.xlsx, .xls) والـ CSV.</p>
+
+    <form action="/reports/upload" method="POST" enctype="multipart/form-data">
+        <!-- Date Picker Section -->
+        <div style="max-width: 400px; margin: 0 auto 2rem; background: rgba(30, 41, 59, 0.4); padding: 1.2rem; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 15px;">
+            <div style="background: rgba(56, 189, 248, 0.1); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-calendar-alt" style="color: var(--accent-color); font-size: 1.2rem;"></i>
+            </div>
+            <div style="flex: 1;">
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">تاريخ التقرير</label>
+                <input type="date" name="report_date" id="report-date" required>
+            </div>
+        </div>
+
+        <style>
+            /* Custom Flatpickr Styling to match theme */
+            .flatpickr-input.form-control { display: none; }
+            .flatpickr-mobile { background: transparent !important; color: white !important; }
+            .flatpickr-calendar { background: #0f172a !important; border: 1px solid var(--glass-border) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important; }
+            .flatpickr-day.selected { background: var(--accent-color) !important; border-color: var(--accent-color) !important; }
+            
+            /* The visible input created by flatpickr */
+            input[readonly].flatpickr-input, .flatpickr-input + input {
+                width: 100%;
+                background: transparent !important;
+                border: none !important;
+                color: white !important;
+                font-weight: 600;
+                font-size: 1rem;
+                padding: 0 !important;
+                outline: none !important;
+                cursor: pointer;
+            }
+        </style>
+
+        <label for="report-files" class="upload-zone" id="drop-zone">
+            <div style="background: rgba(56, 189, 248, 0.1); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: var(--accent-color);"></i>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">اختر الملفات أو اسحبها هنا</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">اضغط هنا لتصفح جهازك</p>
+            <input type="file" name="reports" id="report-files" style="display: none;" accept=".xlsx, .xls, .csv" required multiple onchange="updateFileList()">
+        </label>
+        
+        <div id="file-list" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 10px;">
+            <!-- File items will appear here -->
+        </div>
+        
+        <div style="margin-top: 2.5rem; text-align: center;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem; border-radius: 16px;">
+                <i class="fas fa-magic"></i> &nbsp; بدء المعالجة الذكية
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    flatpickr("#report-date", {
+        locale: "ar",
+        defaultDate: "today",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "j F Y",
+    });
+
+    function updateFileList() {
+        const input = document.getElementById('report-files');
+        const fileListDisplay = document.getElementById('file-list');
+        fileListDisplay.innerHTML = "";
+        
+        if (input.files.length > 0) {
+            Array.from(input.files).forEach(file => {
+                const item = document.createElement('div');
+                item.style.background = "rgba(30, 41, 59, 0.4)";
+                item.style.padding = "15px 20px";
+                item.style.borderRadius = "16px";
+                item.style.display = "flex";
+                item.style.alignItems = "center";
+                item.style.gap = "15px";
+                item.style.border = "1px solid var(--glass-border)";
+                item.style.animation = "fadeIn 0.3s ease forwards";
+                
+                item.innerHTML = `
+                    <div style="background: rgba(16, 185, 129, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-file-csv" style="color: #10b981;"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 2px;">${file.name}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.75rem;">${(file.size / 1024).toFixed(1)} KB • جاهز للرفع</div>
+                    </div>
+                    <div style="color: #10b981;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                `;
+                fileListDisplay.appendChild(item);
+            });
+        }
+    }
+
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--accent-color)';
+        dropZone.style.background = 'rgba(56, 189, 248, 0.08)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = 'var(--glass-border)';
+        dropZone.style.background = 'rgba(30, 41, 59, 0.2)';
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('report-files');
+        input.files = e.dataTransfer.files;
+        updateFileList();
+    });
+</script>

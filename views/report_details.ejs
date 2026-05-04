@@ -1,0 +1,240 @@
+<% 
+    const totalFresh = campaignSummary.reduce((a, b) => a + (b.my_fresh || 0), 0);
+    const totalCallback = campaignSummary.reduce((a, b) => a + (b.callback || 0), 0);
+    const totalFollowUp = campaignSummary.reduce((a, b) => a + (b.follow_up || 0), 0);
+    const totalEOI = campaignSummary.reduce((a, b) => a + (b.eoi || 0), 0);
+    const totalHot = campaignSummary.reduce((a, b) => a + (b.hot_case || 0), 0);
+    const totalLow = campaignSummary.reduce((a, b) => a + (b.follow_up_low || 0), 0);
+    const totalDone = campaignSummary.reduce((a, b) => a + (b.done_deal || 0), 0);
+    const totalProspect = campaignSummary.reduce((a, b) => a + (b.prospect || 0), 0);
+    const totalMeeting = campaignSummary.reduce((a, b) => a + (b.meeting || 0), 0);
+    const totalSchedule = campaignSummary.reduce((a, b) => a + (b.schedule_meeting || 0), 0);
+    const totalNotInt = campaignSummary.reduce((a, b) => a + (b.not_interested || 0), 0);
+    const totalWrong = campaignSummary.reduce((a, b) => a + (b.wrong_number || 0), 0);
+    const grandTotal = campaignSummary.reduce((a, b) => a + b.total, 0);
+%>
+
+<div class="no-print">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+        <div>
+            <h1>تفاصيل ملف: <%= report.original_name %></h1>
+            <p style="color: var(--text-secondary);">تاريخ التقرير المعتمد: <%= new Date(report.report_date).toLocaleDateString('ar-EG') %></p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="/reports/history" class="btn" style="background: rgba(255,255,255,0.05); color: white; text-decoration: none;">
+                <i class="fas fa-arrow-right"></i> عودة للسجل
+            </a>
+            <button onclick="window.print()" class="btn-premium">
+                <i class="fas fa-print"></i> &nbsp; طباعة التقرير
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 3rem;">
+        <div class="card stat-card" style="border-right: 4px solid #10b981;">
+            <div class="stat-label">حالات Fresh</div>
+            <div class="stat-value"><%= totalFresh %></div>
+            <div style="font-size: 0.8rem; color: #10b981;"><%= grandTotal > 0 ? (totalFresh/grandTotal*100).toFixed(1) : 0 %>% من الملف</div>
+        </div>
+        <div class="card stat-card" style="border-right: 4px solid #f59e0b;">
+            <div class="stat-label">متابعة Call Back</div>
+            <div class="stat-value"><%= totalCallback %></div>
+            <div style="font-size: 0.8rem; color: #f59e0b;">تحتاج تواصل</div>
+        </div>
+        <div class="card stat-card" style="border-right: 4px solid #3b82f6;">
+            <div class="stat-label">اجتماعات Meetings</div>
+            <div class="stat-value"><%= totalMeeting %></div>
+            <div style="font-size: 0.8rem; color: #3b82f6;">فرص محققة</div>
+        </div>
+        <div class="card stat-card" style="border-right: 4px solid var(--accent-color);">
+            <div class="stat-label">إجمالي العملاء</div>
+            <div class="stat-value"><%= grandTotal %></div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">سجل متاح</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>تحليل الحملات في هذا الملف</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>القناة</th>
+                    <th>الحملة</th>
+                    <th>إجمالي العملاء</th>
+                    <th>توزيع الحالات</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% campaignSummary.forEach(c => { %>
+                <tr>
+                    <td style="color: var(--text-secondary); font-size: 0.9rem;"><%= c.channel %></td>
+                    <td style="font-weight: 600;"><%= c.campaign %></td>
+                    <td style="font-weight: bold; color: var(--accent-color);"><%= c.total %></td>
+                    <td>
+                        <div style="display: flex; height: 8px; width: 150px; border-radius: 4px; overflow: hidden; background: rgba(255,255,255,0.05);">
+                            <div style="width: <%= c.total > 0 ? (c.my_fresh/c.total*100) : 0 %>%; background: #10b981;"></div>
+                            <div style="width: <%= c.total > 0 ? (c.hot_case/c.total*100) : 0 %>%; background: #ef4444;"></div>
+                            <div style="width: <%= c.total > 0 ? (c.meeting/c.total*100) : 0 %>%; background: #3b82f6;"></div>
+                        </div>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Print View -->
+<div class="only-print">
+    <div class="print-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <div style="text-align: right;">
+            <img src="/logo.webp" alt="Logo" style="height: 65px; margin-bottom: 0.5rem;">
+            <h2 style="font-weight: 800; margin: 0; color: var(--bg-dark); letter-spacing: 1px;">FAIR INTELLIGENCE</h2>
+            <p style="margin: 0; font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; font-weight: bold;">Lead Performance Analytics</p>
+        </div>
+        <div style="text-align: left; color: #000; font-size: 0.9rem;">
+            <p style="margin: 0;">اسم الملف: <%= report.original_name %></p>
+            <p style="margin: 0;">تاريخ التقرير: <%= new Date(report.report_date).toLocaleDateString('ar-EG') %></p>
+            <p style="margin: 0;">توقيت الطباعة: <%= new Date().toLocaleString('ar-EG') %></p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">Channel</th>
+                    <th rowspan="2">Campaign</th>
+                    <th colspan="12">State</th>
+                    <th rowspan="2">Total Leads</th>
+                </tr>
+                <tr>
+                    <th>My Fresh</th>
+                    <th>Call Back</th>
+                    <th>Follow Up</th>
+                    <th>EOI</th>
+                    <th>Hot Case</th>
+                    <th>Follow Up low badget</th>
+                    <th>Done Deal</th>
+                    <th>Prospect</th>
+                    <th>Meeting</th>
+                    <th>Schedule meeting</th>
+                    <th>Not intersted</th>
+                    <th>Wrong Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% campaignSummary.forEach(c => { %>
+                <tr>
+                    <td class="bg-gray"><%= c.channel %></td>
+                    <td class="text-right"><%= c.campaign %></td>
+                    <td><%= c.my_fresh || '' %></td>
+                    <td><%= c.callback || '' %></td>
+                    <td><%= c.follow_up || '' %></td>
+                    <td><%= c.eoi || '' %></td>
+                    <td><%= c.hot_case || '' %></td>
+                    <td><%= c.follow_up_low || '' %></td>
+                    <td><%= c.done_deal || '' %></td>
+                    <td><%= c.prospect || '' %></td>
+                    <td><%= c.meeting || '' %></td>
+                    <td><%= c.schedule_meeting || '' %></td>
+                    <td><%= c.not_interested || '' %></td>
+                    <td><%= c.wrong_number || '' %></td>
+                    <td class="bg-gray" style="font-weight: bold;"><%= c.total %></td>
+                </tr>
+                <% }) %>
+                <tr class="bg-total">
+                    <td colspan="2">Total</td>
+                    <td><%= totalFresh %></td>
+                    <td><%= totalCallback %></td>
+                    <td><%= totalFollowUp %></td>
+                    <td><%= totalEOI %></td>
+                    <td><%= totalHot %></td>
+                    <td><%= totalLow %></td>
+                    <td><%= totalDone %></td>
+                    <td><%= totalProspect %></td>
+                    <td><%= totalMeeting %></td>
+                    <td><%= totalSchedule %></td>
+                    <td><%= totalNotInt %></td>
+                    <td><%= totalWrong %></td>
+                    <td><%= grandTotal %></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="print-header page-break" style="text-align: center; margin-top: 2rem;">
+        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;">أداء الموظفين</h3>
+    </div>
+
+    <div class="table-responsive" style="margin-top: 1rem;">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>اسم الموظف</th>
+                    <th>My Fresh</th>
+                    <th>Call Back</th>
+                    <th>Follow Up</th>
+                    <th>EOI</th>
+                    <th>Hot Case</th>
+                    <th>Follow Up low badget</th>
+                    <th>Done Deal</th>
+                    <th>Prospect</th>
+                    <th>Meeting</th>
+                    <th>Schedule meeting</th>
+                    <th>Not intersted</th>
+                    <th>Wrong Number</th>
+                    <th>إجمالي العملاء</th>
+                    <th>النسبة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% summary.forEach(s => { %>
+                <tr>
+                    <td class="text-right"><%= s.salesman_name %></td>
+                    <td><%= s.my_fresh || '' %></td>
+                    <td><%= s.callback || '' %></td>
+                    <td><%= s.follow_up || '' %></td>
+                    <td><%= s.eoi || '' %></td>
+                    <td><%= s.hot_case || '' %></td>
+                    <td><%= s.follow_up_low || '' %></td>
+                    <td><%= s.done_deal || '' %></td>
+                    <td><%= s.prospect || '' %></td>
+                    <td><%= s.meeting || '' %></td>
+                    <td><%= s.schedule_meeting || '' %></td>
+                    <td><%= s.not_interested || '' %></td>
+                    <td><%= s.wrong_number || '' %></td>
+                    <td class="bg-gray"><%= s.total %></td>
+                    <td><%= grandTotal > 0 ? (s.total / grandTotal * 100).toFixed(1) : 0 %>%</td>
+                </tr>
+                <% }) %>
+                <tr class="bg-total">
+                    <td>إجمالي</td>
+                    <td><%= totalFresh %></td>
+                    <td><%= totalCallback %></td>
+                    <td><%= totalFollowUp %></td>
+                    <td><%= totalEOI %></td>
+                    <td><%= totalHot %></td>
+                    <td><%= totalLow %></td>
+                    <td><%= totalDone %></td>
+                    <td><%= totalProspect %></td>
+                    <td><%= totalMeeting %></td>
+                    <td><%= totalSchedule %></td>
+                    <td><%= totalNotInt %></td>
+                    <td><%= totalWrong %></td>
+                    <td><%= grandTotal %></td>
+                    <td>100%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .only-print { display: none; }
+    @media print {
+        .no-print { display: none !important; }
+        .only-print { display: block !important; }
+    }
+</style>
