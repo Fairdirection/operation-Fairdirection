@@ -26,18 +26,18 @@
     </div>
 
     <!-- Filters -->
-    <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+    <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; background: var(--bg-card); border: 1px solid var(--accent-border); box-shadow: var(--shadow-soft);">
         <form id="filterForm" action="/analytics/total" method="GET" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
             <div class="filter-group" style="flex: 1; min-width: 280px;">
                 <label style="display: block; margin-bottom: 0.8rem; color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">نطاق البحث الزمني:</label>
-                <div class="date-container" style="display: flex; gap: 0; background: rgba(30, 41, 59, 0.4); padding: 5px; border-radius: 16px; border: 1px solid var(--glass-border);">
-                    <div style="flex: 1; display: flex; align-items: center; gap: 10px; padding: 5px 15px; border-left: 1px solid rgba(255,255,255,0.05);">
+                <div class="date-container" style="display: flex; gap: 0; background: rgba(214, 51, 108, 0.03); padding: 5px; border-radius: 16px; border: 1px solid var(--accent-border);">
+                    <div style="flex: 1; display: flex; align-items: center; gap: 10px; padding: 5px 15px; border-left: 1px solid var(--accent-border);">
                         <i class="fas fa-calendar-alt" style="color: var(--accent-color); opacity: 0.7; font-size: 0.9rem;"></i>
-                        <input type="text" id="startDate" name="startDate" value="<%= filters.startDate %>" placeholder="من تاريخ" style="width: 100%; border: none; background: transparent; color: white; font-weight: 500; outline: none; font-size: 0.95rem;">
+                        <input type="text" id="startDate" name="startDate" value="<%= filters.startDate %>" placeholder="من تاريخ" style="width: 100%; border: none; background: transparent; color: var(--text-primary); font-weight: 700; outline: none; font-size: 0.95rem;">
                     </div>
                     <div style="flex: 1; display: flex; align-items: center; gap: 10px; padding: 5px 15px;">
                         <i class="fas fa-calendar-check" style="color: var(--accent-color); opacity: 0.7; font-size: 0.9rem;"></i>
-                        <input type="text" id="endDate" name="endDate" value="<%= filters.endDate %>" placeholder="إلى تاريخ" style="width: 100%; border: none; background: transparent; color: white; font-weight: 500; outline: none; font-size: 0.95rem;">
+                        <input type="text" id="endDate" name="endDate" value="<%= filters.endDate %>" placeholder="إلى تاريخ" style="width: 100%; border: none; background: transparent; color: var(--text-primary); font-weight: 700; outline: none; font-size: 0.95rem;">
                     </div>
                 </div>
             </div>
@@ -46,14 +46,14 @@
                 <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2.5rem; border-radius: 14px; flex: 1;">
                     <i class="fas fa-search"></i> &nbsp; تحليل البيانات
                 </button>
-                <a href="/analytics/total" class="btn" style="background: rgba(255,255,255,0.05); color: white; text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 14px;">
+                <a href="/analytics/total" class="btn" style="background: rgba(214, 51, 108, 0.05); color: var(--accent-color); text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 14px; border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-undo"></i>
                 </a>
             </div>
 
             <!-- Quick Presets -->
-            <div style="width: 100%; display: flex; gap: 8px; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
-                <span style="color: var(--text-secondary); font-size: 0.8rem; align-self: center; margin-left: 10px;">اختصارات:</span>
+            <div style="width: 100%; display: flex; gap: 8px; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--accent-border); flex-wrap: wrap;">
+                <span style="color: var(--text-secondary); font-size: 0.8rem; align-self: center; margin-left: 10px; font-weight: 600;">اختصارات:</span>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn-preset" onclick="setPreset('today')">اليوم</button>
                     <button type="button" class="btn-preset" onclick="setPreset('yesterday')">أمس</button>
@@ -64,7 +64,7 @@
         </form>
         
         <% if (filters.startDate && filters.endDate) { %>
-            <div style="margin-top: 1.5rem; display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.1); color: var(--accent-color); padding: 6px 15px; border-radius: 10px; font-size: 0.85rem;">
+            <div style="margin-top: 1.5rem; display: inline-flex; align-items: center; gap: 8px; background: var(--accent-light); color: var(--accent-color); padding: 6px 15px; border-radius: 10px; font-size: 0.85rem; border: 1px solid var(--accent-border); font-weight: 700;">
                 <i class="fas fa-info-circle"></i> عرض النتائج للفترة المحددة
             </div>
         <% } %>
@@ -72,14 +72,15 @@
 
     <style>
         .btn-preset {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
+            background: rgba(214, 51, 108, 0.03);
+            border: 1px solid var(--accent-border);
             color: var(--text-secondary);
             padding: 5px 15px;
             border-radius: 10px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
+            font-weight: 600;
         }
         .btn-preset:hover {
             background: var(--accent-color);
@@ -94,19 +95,19 @@
         #printOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(255, 245, 248, 0.95);
             backdrop-filter: blur(10px);
             z-index: 9999;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--text-primary);
             transition: all 0.3s ease;
         }
         .loader-spinner {
             width: 50px; height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
+            border: 3px solid rgba(214, 51, 108, 0.1);
             border-top: 3px solid var(--accent-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -250,8 +251,8 @@
                     datasets: [{
                         data: statusData,
                         backgroundColor: [
-                            '#10b981', '#ef4444', '#3b82f6', '#f59e0b', 
-                            '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#cbd5e1'
+                            '#0F172A', '#1E3A8A', '#3B82F6', '#64748B', 
+                            '#60A5FA', '#F59E0B', '#0D9488', '#115E59', '#94A3B8'
                         ],
                         borderWidth: 2, borderColor: '#fff'
                     }]
@@ -302,7 +303,7 @@
                     }
                 }]
             });
-
+ 
             // Salesman Chart
             charts.salesman = new Chart(document.getElementById('salesmanChart'), {
                 type: 'bar',
@@ -311,7 +312,7 @@
                     datasets: [{
                         label: 'عدد العملاء',
                         data: salesmenData.map(s => s.total),
-                        backgroundColor: '#3b82f6',
+                        backgroundColor: '#1E3A8A',
                         borderRadius: 4
                     }]
                 },

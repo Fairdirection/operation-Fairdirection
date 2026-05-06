@@ -72,10 +72,10 @@
                     <td style="font-weight: 600;"><%= c.campaign %></td>
                     <td style="font-weight: bold; color: var(--accent-color);"><%= c.total %></td>
                     <td>
-                        <div style="display: flex; height: 8px; width: 150px; border-radius: 4px; overflow: hidden; background: rgba(255,255,255,0.05);">
-                            <div style="width: <%= c.total > 0 ? (c.my_fresh/c.total*100) : 0 %>%; background: #10b981;"></div>
-                            <div style="width: <%= c.total > 0 ? (c.hot_case/c.total*100) : 0 %>%; background: #ef4444;"></div>
-                            <div style="width: <%= c.total > 0 ? (c.meeting/c.total*100) : 0 %>%; background: #3b82f6;"></div>
+                        <div style="display: flex; height: 8px; width: 150px; border-radius: 4px; overflow: hidden; background: rgba(214, 51, 108, 0.08);">
+                            <div style="width: <%= c.total > 0 ? (c.my_fresh/c.total*100) : 0 %>%; background: #10b981;" title="Fresh: <%= c.my_fresh %>"></div>
+                            <div style="width: <%= c.total > 0 ? (c.hot_case/c.total*100) : 0 %>%; background: #ef4444;" title="Hot: <%= c.hot_case %>"></div>
+                            <div style="width: <%= c.total > 0 ? (c.meeting/c.total*100) : 0 %>%; background: #3b82f6;" title="Meeting: <%= c.meeting %>"></div>
                         </div>
                     </td>
                 </tr>

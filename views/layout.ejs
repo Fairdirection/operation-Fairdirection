@@ -7,24 +7,67 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Global High-Fidelity Official Print Layout Stylesheet */
+        @media print {
+            :root {
+                --accent-color: #0F172A !important; /* Executive Dark Charcoal Navy */
+                --accent-hover: #1E293B !important;
+                --accent-light: #F8FAFC !important; /* Premium light slate white */
+                --accent-border: #E2E8F0 !important;
+                --accent-gradient: none !important;
+                --text-primary: #000000 !important; /* Pure black for high-readability printing */
+                --text-secondary: #475569 !important; /* Formal secondary slate grey */
+                --bg-dark: #FFFFFF !important; /* Save printer ink, pure white backgrounds */
+                --bg-card: #FFFFFF !important;
+                --glass-border: #E2E8F0 !important;
+                --shadow-soft: none !important;
+                --shadow-medium: none !important;
+            }
+            
+            body {
+                background-color: #FFFFFF !important;
+                color: #000000 !important;
+                font-size: 10pt !important;
+            }
+
+            /* Formal table adjustments */
+            table, th, td {
+                border-color: #94A3B8 !important;
+                color: #000000 !important;
+            }
+
+            thead th, th.bg-gray, td.bg-gray {
+                background-color: #F1F5F9 !important; /* Clean corporate table headers */
+                color: #0F172A !important;
+                font-weight: 800 !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #CBD5E1 !important;
+                background: #FFFFFF !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="mobile-header no-print">
         <img src="/logo.webp" alt="Logo" style="height: 35px;">
-        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem;">FAIR INTELLIGENCE</span>
+        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: var(--text-primary);">FAIR INTELLIGENCE</span>
     </div>
 
     <div class="sidebar no-print">
-        <div style="text-align: center; margin-bottom: 2.5rem; padding: 0 1rem;">
-            <img src="/logo.webp" alt="Logo" style="max-width: 140px; height: auto; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2));">
-            <h2 style="font-size: 1.2rem; margin-top: 1rem; letter-spacing: 2px; color: white; font-weight: 800;">FAIR INTELLIGENCE</h2>
-            <p style="font-size: 0.65rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 3px; margin-top: -5px;">Sales Alpha System</p>
+        <div class="sidebar-brand-wrapper">
+            <img src="/logo.webp" alt="Logo" class="sidebar-logo">
+            <h2 class="sidebar-brand-title">FAIR INTELLIGENCE</h2>
+            <p class="sidebar-brand-subtitle">Sales Alpha System</p>
         </div>
-        <nav>
+        <nav class="sidebar-nav-container">
             <a href="/" class="nav-link <%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>">
                 <i class="fas fa-grid-2"></i> <span>لوحة التحكم</span>
             </a>
@@ -37,13 +80,13 @@
             <a href="/analytics/total" class="nav-link <%= typeof page !== 'undefined' && page === 'total' ? 'active' : '' %>">
                 <i class="fas fa-analytics"></i> <span>التقرير الشامل</span>
             </a>
-            <a href="/logout" class="nav-link" style="margin-top: 2rem; color: #f87171;">
+            <a href="/logout" class="nav-link logout-link">
                 <i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span>
             </a>
         </nav>
         
-        <div style="position: absolute; bottom: 2rem; left: 1.5rem; right: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--glass-border);">
-            <p style="color: var(--text-secondary); font-size: 0.75rem; text-align: center;">إصدار النظام v2.0</p>
+        <div class="sidebar-footer-card">
+            <p>إصدار النظام v2.0</p>
         </div>
     </div>
     
