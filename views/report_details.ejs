@@ -87,17 +87,8 @@
 
 <!-- Print View -->
 <div class="only-print">
-    <div class="print-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1.5rem; margin-bottom: 2rem;">
-        <div style="text-align: right;">
-            <img src="/logo.webp" alt="Logo" style="height: 65px; margin-bottom: 0.5rem;">
-            <h2 style="font-weight: 800; margin: 0; color: var(--bg-dark); letter-spacing: 1px;">FAIR INTELLIGENCE</h2>
-            <p style="margin: 0; font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; font-weight: bold;">Lead Performance Analytics</p>
-        </div>
-        <div style="text-align: left; color: #000; font-size: 0.9rem;">
-            <p style="margin: 0;">اسم الملف: <%= report.original_name %></p>
-            <p style="margin: 0;">تاريخ التقرير: <%= new Date(report.report_date).toLocaleDateString('ar-EG') %></p>
-            <p style="margin: 0;">توقيت الطباعة: <%= new Date().toLocaleString('ar-EG') %></p>
-        </div>
+    <div class="print-header" style="text-align: center; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;">أداء الحملات والقنوات</h3>
     </div>
 
     <div class="table-responsive">
