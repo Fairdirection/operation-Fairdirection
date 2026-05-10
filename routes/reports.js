@@ -27,7 +27,17 @@ router.post('/upload', upload.array('reports'), (req, res) => {
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const data = XLSX.utils.sheet_to_json(worksheet);
+        const rawData = XLSX.utils.sheet_to_json(worksheet);
+
+        // Filter out blank/empty rows (where Name, Mobile, and Salesman are all blank)
+        const data = rawData.filter(lead => {
+          const name = lead['Name'] || lead['الاسم'];
+          const mobile = lead['Mobile'] || lead['الموبايل'];
+          const salesman = lead['Salesman Name'] || lead['اسم البائع'];
+          return (name && String(name).trim() !== '') || 
+                 (mobile && String(mobile).trim() !== '') || 
+                 (salesman && String(salesman).trim() !== '');
+        });
 
         const info = insertUpload.run(file.filename, file.originalname, reportDate, data.length);
         const uploadId = info.lastInsertRowid;
@@ -73,7 +83,7 @@ router.get('/view/:id', (req, res) => {
       COUNT(*) as total,
       COUNT(CASE WHEN LOWER(state) LIKE '%fresh%' THEN 1 END) as my_fresh,
       COUNT(CASE WHEN LOWER(state) LIKE '%call%back%' THEN 1 END) as callback,
-      COUNT(CASE WHEN LOWER(state) LIKE 'follow up%' THEN 1 END) as follow_up,
+      COUNT(CASE WHEN LOWER(state) LIKE 'follow up%' AND LOWER(state) NOT LIKE '%follow%up%low%' THEN 1 END) as follow_up,
       COUNT(CASE WHEN LOWER(state) = 'eoi' THEN 1 END) as eoi,
       COUNT(CASE WHEN LOWER(state) = 'hot case' THEN 1 END) as hot_case,
       COUNT(CASE WHEN LOWER(state) LIKE '%follow%up%low%' THEN 1 END) as follow_up_low,
@@ -96,7 +106,7 @@ router.get('/view/:id', (req, res) => {
       COUNT(*) as total,
       COUNT(CASE WHEN LOWER(state) LIKE '%fresh%' THEN 1 END) as my_fresh,
       COUNT(CASE WHEN LOWER(state) LIKE '%call%back%' THEN 1 END) as callback,
-      COUNT(CASE WHEN LOWER(state) LIKE 'follow up%' THEN 1 END) as follow_up,
+      COUNT(CASE WHEN LOWER(state) LIKE 'follow up%' AND LOWER(state) NOT LIKE '%follow%up%low%' THEN 1 END) as follow_up,
       COUNT(CASE WHEN LOWER(state) = 'eoi' THEN 1 END) as eoi,
       COUNT(CASE WHEN LOWER(state) = 'hot case' THEN 1 END) as hot_case,
       COUNT(CASE WHEN LOWER(state) LIKE '%follow%up%low%' THEN 1 END) as follow_up_low,
