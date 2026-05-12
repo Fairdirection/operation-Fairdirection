@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<%= lang %>" dir="<%= lang === 'en' ? 'ltr' : 'rtl' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | Fair Intelligence</title>
+    <title><%= __('loginTitle') %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -101,7 +101,8 @@
             position: relative;
         }
 
-        .form-group i {
+        /* Direction aware padding and icon adjustments */
+        html[dir="rtl"] .form-group i {
             position: absolute;
             right: 1.2rem;
             top: 50%;
@@ -110,9 +111,31 @@
             transition: color 0.3s;
         }
 
-        input {
+        html[dir="ltr"] .form-group i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        html[dir="rtl"] input {
             width: 100%;
             padding: 1rem 3rem 1rem 1rem;
+            background: rgba(214, 51, 108, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            outline: none;
+            font-weight: 600;
+        }
+
+        html[dir="ltr"] input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
             background: rgba(214, 51, 108, 0.02);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
@@ -177,23 +200,30 @@
 
         <% if (error) { %>
             <div class="error-msg">
-                <i class="fas fa-exclamation-circle"></i> <%= error %>
+                <i class="fas fa-exclamation-circle"></i> <%= __(error) %>
             </div>
         <% } %>
 
         <form action="/login" method="POST">
             <div class="form-group">
-                <input type="text" name="username" placeholder="اسم المستخدم" required>
+                <input type="text" name="username" placeholder="<%= __('username') %>" required>
                 <i class="fas fa-user"></i>
             </div>
             <div class="form-group">
-                <input type="password" name="password" placeholder="كلمة المرور" required>
+                <input type="password" name="password" placeholder="<%= __('password') %>" required>
                 <i class="fas fa-lock"></i>
             </div>
-            <button type="submit" class="btn">دخول للنظام</button>
+            <button type="submit" class="btn"><%= __('loginBtn') %></button>
         </form>
 
-        <div style="margin-top: 2rem; text-align: center; color: #64748b; font-size: 0.75rem;">
+        <!-- Dynamic Language Switcher on Login page -->
+        <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 15px; font-size: 0.85rem; font-weight: bold;">
+            <a href="/set-lang/ar" style="text-decoration: none; color: <%= lang === 'ar' ? 'var(--accent-color)' : '#94a3b8' %>; transition: color 0.2s;">العربية</a>
+            <span style="color: #e2e8f0;">|</span>
+            <a href="/set-lang/en" style="text-decoration: none; color: <%= lang === 'en' ? 'var(--accent-color)' : '#94a3b8' %>; transition: color 0.2s;">English</a>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center; color: #64748b; font-size: 0.75rem; font-weight: 500;">
             &copy; 2026 Fair Intelligence. All rights reserved.
         </div>
     </div>

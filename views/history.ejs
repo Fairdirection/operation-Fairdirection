@@ -1,27 +1,27 @@
 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 2rem;">
     <div>
-        <h1>سجل الملفات والتقارير</h1>
-        <p style="color: var(--text-secondary);">متابعة وإدارة كافة دفعات البيانات التي تم رفعها للنظام</p>
+        <h1><%= __('historyTitle') %></h1>
+        <p style="color: var(--text-secondary);"><%= __('historySubtitle') %></p>
     </div>
     
     <% if (reports.length > 0) { %>
     <div class="card" style="padding: 1rem 1.5rem; display: flex; gap: 15px; align-items: center; background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.12); margin-bottom: 0; box-shadow: var(--shadow-soft);">
         <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-size: 0.75rem; color: #ef4444; font-weight: bold;">تنظيف السجلات (حتى تاريخ معين):</label>
+            <label style="font-size: 0.75rem; color: #ef4444; font-weight: bold;"><%= __('cleanupLogs') %></label>
             <form action="/reports/delete-all" method="POST" id="deleteByDateForm" style="display: flex; gap: 10px;">
                 <div style="background: white; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.15); padding: 5px 12px; display: flex; align-items: center; gap: 8px;">
                     <i class="far fa-calendar-times" style="color: #ef4444; font-size: 0.9rem;"></i>
-                    <input type="text" id="targetDate" name="targetDate" placeholder="اختر التاريخ..." style="background: transparent; border: none; color: var(--text-primary); outline: none; font-size: 0.85rem; width: 120px; font-weight: 600;">
+                    <input type="text" id="targetDate" name="targetDate" placeholder="<%= __('selectDate') %>" style="background: transparent; border: none; color: var(--text-primary); outline: none; font-size: 0.85rem; width: 120px; font-weight: 600;">
                 </div>
                 <button type="submit" onclick="return confirmDeletionByDate()" class="btn" style="background: #ef4444; color: white; padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);">
-                    حذف السجلات القديمة
+                    <%= __('deleteOldLogs') %>
                 </button>
             </form>
         </div>
         <div style="width: 1px; height: 40px; background: rgba(239, 68, 68, 0.15); margin: 0 5px;"></div>
-        <form action="/reports/delete-all" method="POST" onsubmit="return confirm('⚠️ تحذير نهائي: هل أنت متأكد من حذف كافة التقارير؟ لا يمكن التراجع عن هذه الخطوة وسيتم مسح قاعدة البيانات بالكامل.')">
+        <form action="/reports/delete-all" method="POST" onsubmit="return confirm('<%= __('deleteAllConfirm') %>')">
             <button type="submit" class="btn" style="background: transparent; color: #ef4444; padding: 0.5rem; font-size: 0.75rem; font-weight: 800; text-decoration: underline; border: none; cursor: pointer;">
-                حذف الكل نهائياً
+                <%= __('deleteAll') %>
             </button>
         </form>
     </div>
@@ -31,7 +31,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         flatpickr("#targetDate", {
-            locale: "ar",
+            locale: "<%= lang %>",
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "j F Y"
@@ -41,10 +41,10 @@
     function confirmDeletionByDate() {
         const dateInput = document.getElementById('targetDate').value;
         if (!dateInput) {
-            alert('يرجى اختيار تاريخ أولاً');
+            alert('<%= __('selectDateAlert') %>');
             return false;
         }
-        return confirm(`⚠️ تنبيه: سيتم حذف كافة التقارير من بداية النظام وحتى تاريخ ${dateInput}. هل أنت متأكد؟`);
+        return confirm('<%= __('deleteByDateConfirm') %>');
     }
 </script>
 
@@ -68,25 +68,25 @@
             <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem;">
                 <div style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.85rem;">
                     <i class="far fa-calendar-alt" style="width: 16px;"></i>
-                    <span>تاريخ التقرير: <%= new Date(report.report_date).toLocaleDateString('ar-EG', { dateStyle: 'long' }) %></span>
+                    <span><%= __('reportDate') %>: <%= new Date(report.report_date).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', { dateStyle: 'long' }) %></span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.85rem;">
                     <i class="fas fa-users" style="width: 16px;"></i>
-                    <span>إجمالي العملاء: <strong><%= report.total_leads %></strong> عميل</span>
+                    <span><%= __('totalLeads') %>: <strong><%= report.total_leads.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></strong></span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.75rem; opacity: 0.6;">
                     <i class="fas fa-clock" style="width: 16px;"></i>
-                    <span>تم الرفع في: <%= new Date(report.uploaded_at).toLocaleString('ar-EG') %></span>
+                    <span><%= __('uploadedAt') %>: <%= new Date(report.uploaded_at).toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></span>
                 </div>
             </div>
         </div>
 
         <div style="display: flex; gap: 10px; padding-top: 1.5rem; border-top: 1px solid var(--accent-border);">
-            <a href="/reports/view/<%= report.id %>" class="btn" style="flex: 2; background: var(--accent-gradient); color: white; text-decoration: none; justify-content: center; font-size: 0.9rem; padding: 0.7rem; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 15px rgba(214, 51, 108, 0.15);">
-                <i class="fas fa-chart-pie"></i> عرض التفاصيل
+            <a href="/reports/view/<%= report.id %>" class="btn" style="flex: 2; background: var(--accent-gradient); color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; padding: 0.7rem; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 15px rgba(214, 51, 108, 0.15);">
+                <i class="fas fa-chart-pie"></i> <%= __('viewDetails') %>
             </a>
-            <form action="/reports/delete/<%= report.id %>" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا التقرير؟ سيتم حذف كافة البيانات المرتبطة به.')" style="flex: 1;">
-                <button type="submit" class="btn delete-btn" style="width: 100%; background: rgba(239, 68, 68, 0.05); color: #ef4444; justify-content: center; padding: 0.7rem; border: 1px solid rgba(239, 68, 68, 0.12); border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            <form action="/reports/delete/<%= report.id %>" method="POST" onsubmit="return confirm('<%= __('deleteReportConfirm') %>')" style="flex: 1;">
+                <button type="submit" class="btn delete-btn" style="width: 100%; background: rgba(239, 68, 68, 0.05); color: #ef4444; display: flex; align-items: center; justify-content: center; padding: 0.7rem; border: 1px solid rgba(239, 68, 68, 0.12); border-radius: 12px; cursor: pointer; transition: all 0.2s;">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </form>
@@ -97,8 +97,8 @@
     <% if (reports.length === 0) { %>
     <div class="card" style="grid-column: 1 / -1; padding: 5rem; text-align: center;">
         <i class="fas fa-folder-open" style="font-size: 4rem; opacity: 0.1; display: block; margin-bottom: 1.5rem;"></i>
-        <p style="color: var(--text-secondary);">لا توجد تقارير مرفوعة حالياً. ابدأ برفع ملفاتك من صفحة "رفع تقرير".</p>
-        <a href="/upload" class="btn btn-primary" style="margin-top: 2rem; text-decoration: none;">رفع ملف الآن</a>
+        <p style="color: var(--text-secondary);"><%= __('noReportsHistory') %></p>
+        <a href="/upload" class="btn btn-primary" style="margin-top: 2rem; text-decoration: none;"><%= __('uploadNow') %></a>
     </div>
     <% } %>
 </div>

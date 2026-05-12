@@ -30,7 +30,7 @@ router.post('/login', guest, (req, res) => {
         return res.redirect('/');
     }
 
-    res.render('login', { layout: false, error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
+    res.render('login', { layout: false, error: 'incorrectCredentials' });
 });
 
 router.get('/logout', (req, res) => {

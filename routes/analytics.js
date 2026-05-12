@@ -3,16 +3,36 @@ const router = express.Router();
 const db = require('../config/database');
 
 router.get('/total', (req, res) => {
-    const { startDate, endDate } = req.query;
-    let dateFilter = '';
-    const params = [];
+    const { startDate, endDate, teamId, salesmen } = req.query;
+    const conditions = [];
+    const queryParams = [];
 
+    // Date range filter
     if (startDate && endDate) {
-        dateFilter = 'WHERE u.report_date BETWEEN ? AND ?';
-        params.push(startDate, endDate);
+        conditions.push('u.report_date BETWEEN ? AND ?');
+        queryParams.push(startDate, endDate);
     }
 
-    // Aggregate data from leads filtered by upload report_date
+    // Team or Specific Salesmen filter
+    let selectedTeam = null;
+    if (teamId && teamId !== '') {
+        selectedTeam = db.prepare('SELECT * FROM teams WHERE id = ?').get(teamId);
+        if (selectedTeam) {
+            conditions.push('l.salesman_name IN (SELECT salesman_name FROM team_members WHERE team_id = ?)');
+            queryParams.push(teamId);
+        }
+    } else if (salesmen) {
+        const selectedSalesmen = Array.isArray(salesmen) ? salesmen : [salesmen];
+        if (selectedSalesmen.length > 0) {
+            const placeholders = selectedSalesmen.map(() => '?').join(',');
+            conditions.push(`l.salesman_name IN (${placeholders})`);
+            queryParams.push(...selectedSalesmen);
+        }
+    }
+
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+
+    // Aggregate data from leads filtered by upload report_date, team, and salesman names
     const summary = db.prepare(`
         SELECT 
             l.salesman_name,
@@ -31,10 +51,10 @@ router.get('/total', (req, res) => {
             COUNT(CASE WHEN LOWER(l.state) LIKE '%wrong%number%' THEN 1 END) as wrong_number
         FROM leads l
         JOIN uploads u ON l.upload_id = u.id
-        ${dateFilter}
+        ${whereClause}
         GROUP BY l.salesman_name
         ORDER BY total DESC
-    `).all(...params);
+    `).all(...queryParams);
 
     const campaignSummary = db.prepare(`
         SELECT 
@@ -55,15 +75,35 @@ router.get('/total', (req, res) => {
             COUNT(CASE WHEN LOWER(l.state) LIKE '%wrong%number%' THEN 1 END) as wrong_number
         FROM leads l
         JOIN uploads u ON l.upload_id = u.id
-        ${dateFilter}
+        ${whereClause}
         GROUP BY l.channel, l.campaign
         ORDER BY total DESC
-    `).all(...params);
+    `).all(...queryParams);
+
+    // Fetch list of all teams and distinct salesmen for dropdown lists
+    const teams = db.prepare('SELECT * FROM teams ORDER BY name ASC').all();
+    
+    const allSalesmen = db.prepare(`
+        SELECT DISTINCT salesman_name 
+        FROM leads 
+        WHERE salesman_name IS NOT NULL 
+          AND TRIM(salesman_name) != '' 
+          AND salesman_name != '-'
+          AND salesman_name != 'غير معروف'
+        ORDER BY salesman_name ASC
+    `).all().map(s => s.salesman_name);
 
     res.render('total_summary', { 
         summary, 
         campaignSummary, 
-        filters: { startDate, endDate },
+        teams,
+        allSalesmen,
+        filters: { 
+            startDate: startDate || '', 
+            endDate: endDate || '', 
+            teamId: teamId || '', 
+            salesmen: Array.isArray(salesmen) ? salesmen : (salesmen ? [salesmen] : [])
+        },
         page: 'total'
     });
 });

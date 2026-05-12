@@ -1,0 +1,184 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1><%= __('teamsTitle') %></h1>
+        <p style="color: var(--text-secondary);"><%= __('teamsSubtitle') %></p>
+    </div>
+</div>
+
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; align-items: flex-start;">
+    <!-- Column 1: Create Team Card -->
+    <div class="card" style="padding: 1.8rem; background: var(--bg-card); border: 1px solid var(--accent-border);">
+        <h3 style="margin-bottom: 1.2rem; color: var(--text-primary); font-weight: 700; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem;"><%= __('createNewTeam') %></h3>
+        <form action="/teams/add" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);"><%= __('teamNameLabel') %></label>
+                <input type="text" name="name" required placeholder="<%= __('teamNamePlaceholder') %>" style="padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--accent-border); background: var(--bg-dark); color: var(--text-primary); outline: none; font-weight: 600; width: 100%;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="justify-content: center; width: 100%; padding: 0.8rem;">
+                <i class="fas fa-plus"></i> &nbsp; <%= __('addTeamBtn') %>
+            </button>
+        </form>
+    </div>
+
+    <!-- Column 2: Teams List -->
+    <div class="card" style="padding: 2rem;">
+        <h3 style="margin-bottom: 1.5rem; color: var(--text-primary); font-weight: 700;"><%= __('currentTeams') %></h3>
+        
+        <% if (teams.length === 0) { %>
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
+                <i class="fas fa-users-slash" style="font-size: 3.5rem; color: var(--accent-color); opacity: 0.3; margin-bottom: 1rem; display: block;"></i>
+                <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;"><%= __('noTeamsAdded') %></p>
+                <p style="font-size: 0.85rem;"><%= __('useSideForm') %></p>
+            </div>
+        <% } else { %>
+            <div class="table-responsive">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 0.8rem 1rem; text-align: <%= lang === 'en' ? 'left' : 'right' %>; font-weight: 800; font-size: 0.9rem;"><%= __('teamNameLabel').replace(':', '') %></th>
+                            <th style="padding: 0.8rem 1rem; text-align: center; font-weight: 800; font-size: 0.9rem;"><%= __('membersCount') %></th>
+                            <th style="padding: 0.8rem 1rem; text-align: <%= lang === 'en' ? 'left' : 'right' %>; font-weight: 800; font-size: 0.9rem;"><%= __('membersList') %></th>
+                            <th style="padding: 0.8rem 1rem; text-align: center; font-weight: 800; font-size: 0.9rem; width: 240px;"><%= __('actions') %></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% teams.forEach(team => { %>
+                            <tr style="background: rgba(255, 255, 255, 0.4); transition: transform 0.2s;">
+                                <td style="padding: 1rem; font-weight: 700; color: var(--text-primary);">
+                                    <i class="fas fa-users" style="color: var(--accent-color); margin-inline-end: 8px;"></i>
+                                    <%= team.name %>
+                                </td>
+                                <td style="padding: 1rem; text-align: center;">
+                                    <span style="background: var(--accent-light); color: var(--accent-color); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; border: 1px solid var(--accent-border);">
+                                        <%= team.member_count.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %> <%= __('employeeActiveCount') %>
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: 0.85rem;">
+                                    <% if (teamMembers[team.id] && teamMembers[team.id].length > 0) { %>
+                                        <%= teamMembers[team.id].join(lang === 'en' ? ', ' : '، ') %>
+                                    <% } else { %>
+                                        <span style="font-style: italic; opacity: 0.6;"><%= __('noMembersAdded') %></span>
+                                    <% } %>
+                                </td>
+                                <td style="padding: 1rem; text-align: center;">
+                                    <div style="display: flex; gap: 10px; justify-content: center;">
+                                        <button onclick="openEditModal(<%= team.id %>, '<%= team.name %>', <%= JSON.stringify(teamMembers[team.id] || []) %>)" class="btn" style="background: rgba(214, 51, 108, 0.05); color: var(--accent-color); border: 1px solid var(--accent-border); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.8rem; font-weight: 700;">
+                                            <i class="fas fa-user-edit"></i> <%= __('assignMembers') %>
+                                        </button>
+                                        <form action="/teams/delete/<%= team.id %>" method="POST" onsubmit="return confirm('<%= __('teamDeleteConfirm') %>')">
+                                            <button type="submit" class="btn" style="background: rgba(239, 68, 68, 0.05); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.15); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.8rem; font-weight: 700;">
+                                                <i class="fas fa-trash-alt"></i> <%= __('delete') %>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Modal Background / Backdrop -->
+<div id="editMembersModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 33, 0.5); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s ease;">
+    <!-- Modal Card -->
+    <div class="card" style="width: 100%; max-width: 600px; background: var(--bg-card); border: 1px solid var(--accent-border); box-shadow: var(--shadow-medium); display: flex; flex-direction: column; max-height: 85vh; padding: 2rem; margin-bottom: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.8rem;">
+            <h3 id="modalTitle" style="font-weight: 800; color: var(--text-primary); margin: 0;"><%= __('assignMembers') %></h3>
+            <button onclick="closeEditModal()" style="background: none; border: none; font-size: 1.4rem; color: var(--text-secondary); cursor: pointer; transition: color 0.2s;"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <!-- Live Search Field -->
+        <div style="position: relative; margin-bottom: 1.2rem;">
+            <i class="fas fa-search" style="position: absolute; <%= lang === 'en' ? 'left: 15px;' : 'right: 15px;' %> top: 50%; transform: translateY(-50%); color: var(--text-secondary); opacity: 0.6;"></i>
+            <input type="text" id="memberSearch" onkeyup="filterSalesmen()" placeholder="<%= __('searchEmployee') %>" style="width: 100%; padding: <%= lang === 'en' ? '0.8rem 1.2rem 0.8rem 2.8rem' : '0.8rem 2.8rem 0.8rem 1.2rem' %>; border-radius: 12px; border: 1px solid var(--accent-border); background: var(--bg-dark); color: var(--text-primary); outline: none; font-weight: 600;">
+        </div>
+
+        <form id="membersForm" action="" method="POST" style="display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.8rem; font-weight: 600;"><%= __('selectTeamPrompt') %></p>
+            
+            <!-- Scrollable list of checkboxes -->
+            <div id="salesmenChecklist" style="overflow-y: auto; flex: 1; border: 1px solid var(--accent-border); border-radius: 16px; padding: 1rem; background: var(--bg-dark); display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; min-height: 200px;">
+                <% if (salesmen.length === 0) { %>
+                    <div style="text-align: center; color: var(--text-secondary); padding: 3rem 1rem; font-style: italic;">
+                        <%= __('noEmployeeNames') %>
+                    </div>
+                <% } else { %>
+                    <% salesmen.forEach((salesman, i) => { %>
+                        <label class="member-checkbox-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 0.6rem 0.8rem; border-radius: 10px; background: white; cursor: pointer; border: 1px solid rgba(214, 51, 108, 0.04); transition: all 0.2s;">
+                             <input type="checkbox" name="members" value="<%= salesman %>" style="accent-color: var(--accent-color); width: 18px; height: 18px; cursor: pointer;">
+                            <span class="salesman-name-text" style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;"><%= salesman %></span>
+                        </label>
+                    <% }) %>
+                <% } %>
+            </div>
+
+            <!-- Footer actions -->
+            <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--accent-border); padding-top: 1.2rem;">
+                <button type="button" onclick="closeEditModal()" class="btn" style="background: rgba(44, 30, 33, 0.05); color: var(--text-secondary); border: 1px solid var(--accent-border); padding: 0.8rem 1.8rem; border-radius: 12px;"><%= __('cancel') %></button>
+                <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2.2rem; border-radius: 12px;"><%= __('saveChanges') %></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .member-checkbox-wrapper:hover {
+        background: var(--accent-light) !important;
+        border-color: rgba(214, 51, 108, 0.15) !important;
+        transform: translateX(<%= lang === 'en' ? '5px' : '-5px' %>);
+    }
+</style>
+
+<script>
+    const modal = document.getElementById('editMembersModal');
+    const form = document.getElementById('membersForm');
+    const title = document.getElementById('modalTitle');
+    const searchInput = document.getElementById('memberSearch');
+
+    function openEditModal(teamId, teamName, assignedMembers) {
+        title.innerText = '<%= __('assignMembers') %>: ' + teamName;
+        form.action = `/teams/members/${teamId}`;
+        
+        // Reset search field
+        searchInput.value = '';
+        filterSalesmen();
+
+        // Get all checkboxes in the checklist
+        const checkboxes = form.querySelectorAll('input[name="members"]');
+        checkboxes.forEach(cb => {
+            cb.checked = assignedMembers.includes(cb.value);
+        });
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Stop page scrolling under modal
+    }
+
+    function closeEditModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function filterSalesmen() {
+        const query = searchInput.value.toLowerCase().trim();
+        const items = document.querySelectorAll('.member-checkbox-wrapper');
+        
+        items.forEach(item => {
+            const name = item.querySelector('.salesman-name-text').innerText.toLowerCase();
+            if (name.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Close modal when clicking outside content card
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeEditModal();
+        }
+    }
+</script>

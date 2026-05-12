@@ -53,6 +53,20 @@ db.exec(`
     password TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS teams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS team_members (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    team_id INTEGER NOT NULL,
+    salesman_name TEXT NOT NULL,
+    UNIQUE(team_id, salesman_name),
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+  );
 `);
 
 // Seed initial user if not exists

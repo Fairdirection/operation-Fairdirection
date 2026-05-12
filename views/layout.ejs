@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<%= lang %>" dir="<%= lang === 'en' ? 'ltr' : 'rtl' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fair Intelligence | منظومة ذكاء المبيعات</title>
+    <title>Fair Intelligence | <%= __('systemSubtitle') %></title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
@@ -58,35 +57,50 @@
 <body>
     <div class="mobile-header no-print">
         <img src="/logo.webp" alt="Logo" style="height: 35px;">
-        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: var(--text-primary);">FAIR INTELLIGENCE</span>
+        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: var(--text-primary);"><%= __('systemName') %></span>
     </div>
 
     <div class="sidebar no-print">
         <div class="sidebar-brand-wrapper">
             <img src="/logo.webp" alt="Logo" class="sidebar-logo">
-            <h2 class="sidebar-brand-title">FAIR INTELLIGENCE</h2>
-            <p class="sidebar-brand-subtitle">Sales Alpha System</p>
+            <h2 class="sidebar-brand-title"><%= __('systemName') %></h2>
+            <p class="sidebar-brand-subtitle"><%= __('systemSubtitle') %></p>
         </div>
         <nav class="sidebar-nav-container">
             <a href="/" class="nav-link <%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>">
-                <i class="fas fa-grid-2"></i> <span>لوحة التحكم</span>
+                <i class="fas fa-grid-2"></i> <span><%= __('dashboard') %></span>
             </a>
             <a href="/upload" class="nav-link <%= typeof page !== 'undefined' && page === 'upload' ? 'active' : '' %>">
-                <i class="fas fa-plus-square"></i> <span>رفع تقارير</span>
+                <i class="fas fa-plus-square"></i> <span><%= __('uploadReports') %></span>
             </a>
             <a href="/reports/history" class="nav-link <%= typeof page !== 'undefined' && page === 'history' ? 'active' : '' %>">
-                <i class="fas fa-folder-open"></i> <span>سجل الملفات</span>
+                <i class="fas fa-folder-open"></i> <span><%= __('reportsHistory') %></span>
             </a>
             <a href="/analytics/total" class="nav-link <%= typeof page !== 'undefined' && page === 'total' ? 'active' : '' %>">
-                <i class="fas fa-analytics"></i> <span>التقرير الشامل</span>
+                <i class="fas fa-analytics"></i> <span><%= __('cumulativeReport') %></span>
+            </a>
+            <a href="/teams" class="nav-link <%= typeof page !== 'undefined' && page === 'teams' ? 'active' : '' %>">
+                <i class="fas fa-users"></i> <span><%= __('manageTeams') %></span>
             </a>
             <a href="/logout" class="nav-link logout-link">
-                <i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span>
+                <i class="fas fa-sign-out-alt"></i> <span><%= __('logout') %></span>
             </a>
         </nav>
         
+        <!-- Premium Dual-Language Pill Toggle -->
+        <div style="margin: 1.5rem 0 0.5rem; padding: 0 0.5rem; display: flex; justify-content: center;">
+            <div style="background: rgba(214, 51, 108, 0.05); border: 1px solid var(--accent-border); padding: 4px; border-radius: 12px; display: flex; width: 100%; gap: 4px;">
+                <a href="/set-lang/ar" style="flex: 1; text-align: center; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 8px; text-decoration: none; color: <%= lang === 'ar' ? 'white' : 'var(--text-secondary)' %>; background: <%= lang === 'ar' ? 'var(--accent-gradient)' : 'transparent' %>; box-shadow: <%= lang === 'ar' ? '0 4px 10px rgba(214, 51, 108, 0.15)' : 'none' %>; transition: all 0.3s ease;">
+                    العربية
+                </a>
+                <a href="/set-lang/en" style="flex: 1; text-align: center; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 8px; text-decoration: none; color: <%= lang === 'en' ? 'white' : 'var(--text-secondary)' %>; background: <%= lang === 'en' ? 'var(--accent-gradient)' : 'transparent' %>; box-shadow: <%= lang === 'en' ? '0 4px 10px rgba(214, 51, 108, 0.15)' : 'none' %>; transition: all 0.3s ease;">
+                    English
+                </a>
+            </div>
+        </div>
+
         <div class="sidebar-footer-card">
-            <p>إصدار النظام v2.0</p>
+            <p><%= __('systemVersion') %></p>
         </div>
     </div>
     

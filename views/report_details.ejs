@@ -15,54 +15,54 @@
 %>
 
 <div class="no-print">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 15px;">
         <div>
-            <h1>تفاصيل ملف: <%= report.original_name %></h1>
-            <p style="color: var(--text-secondary);">تاريخ التقرير المعتمد: <%= new Date(report.report_date).toLocaleDateString('ar-EG') %></p>
+            <h1><%= __('fileDetails') %>: <%= report.original_name %></h1>
+            <p style="color: var(--text-secondary);"><%= __('approvedDate') %>: <%= new Date(report.report_date).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', { dateStyle: 'long' }) %></p>
         </div>
         <div style="display: flex; gap: 12px;">
-            <a href="/reports/history" class="btn" style="background: rgba(255,255,255,0.05); color: white; text-decoration: none;">
-                <i class="fas fa-arrow-right"></i> عودة للسجل
+            <a href="/reports/history" class="btn" style="background: rgba(255,255,255,0.05); color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                <i class="fas <%= lang === 'en' ? 'fa-arrow-left' : 'fa-arrow-right' %>"></i> <%= __('backToHistory') %>
             </a>
             <button onclick="window.print()" class="btn-premium">
-                <i class="fas fa-print"></i> &nbsp; طباعة التقرير
+                <i class="fas fa-print"></i> &nbsp; <%= __('printReport') %>
             </button>
         </div>
     </div>
 
     <!-- Summary Cards -->
-    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 3rem;">
-        <div class="card stat-card" style="border-right: 4px solid #10b981;">
-            <div class="stat-label">حالات Fresh</div>
-            <div class="stat-value"><%= totalFresh %></div>
-            <div style="font-size: 0.8rem; color: #10b981;"><%= grandTotal > 0 ? (totalFresh/grandTotal*100).toFixed(1) : 0 %>% من الملف</div>
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 3rem; gap: 1.5rem;">
+        <div class="card stat-card" style="border-inline-start: 4px solid #10b981; border-right: none; border-left: none;">
+            <div class="stat-label"><%= __('freshStates') %></div>
+            <div class="stat-value"><%= totalFresh.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="font-size: 0.8rem; color: #10b981;"><%= grandTotal > 0 ? (totalFresh/grandTotal*100).toFixed(1) : 0 %>% <%= lang === 'en' ? 'of file' : 'من الملف' %></div>
         </div>
-        <div class="card stat-card" style="border-right: 4px solid #f59e0b;">
-            <div class="stat-label">متابعة Call Back</div>
-            <div class="stat-value"><%= totalCallback %></div>
-            <div style="font-size: 0.8rem; color: #f59e0b;">تحتاج تواصل</div>
+        <div class="card stat-card" style="border-inline-start: 4px solid #f59e0b; border-right: none; border-left: none;">
+            <div class="stat-label"><%= __('callbackFollowup') %></div>
+            <div class="stat-value"><%= totalCallback.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="font-size: 0.8rem; color: #f59e0b;"><%= lang === 'en' ? 'Needs Contact' : 'تحتاج تواصل' %></div>
         </div>
-        <div class="card stat-card" style="border-right: 4px solid #3b82f6;">
-            <div class="stat-label">اجتماعات Meetings</div>
-            <div class="stat-value"><%= totalMeeting %></div>
-            <div style="font-size: 0.8rem; color: #3b82f6;">فرص محققة</div>
+        <div class="card stat-card" style="border-inline-start: 4px solid #3b82f6; border-right: none; border-left: none;">
+            <div class="stat-label"><%= __('meetingsCard') %></div>
+            <div class="stat-value"><%= totalMeeting.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="font-size: 0.8rem; color: #3b82f6;"><%= lang === 'en' ? 'Closed Deals' : 'فرص محققة' %></div>
         </div>
-        <div class="card stat-card" style="border-right: 4px solid var(--accent-color);">
-            <div class="stat-label">إجمالي العملاء</div>
-            <div class="stat-value"><%= grandTotal %></div>
-            <div style="font-size: 0.8rem; color: var(--text-secondary);">سجل متاح</div>
+        <div class="card stat-card" style="border-inline-start: 4px solid var(--accent-color); border-right: none; border-left: none;">
+            <div class="stat-label"><%= __('totalLeads') %></div>
+            <div class="stat-value"><%= grandTotal.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);"><%= lang === 'en' ? 'Available Records' : 'سجل متاح' %></div>
         </div>
     </div>
 
     <div class="card">
-        <h2>تحليل الحملات في هذا الملف</h2>
+        <h2><%= __('campaignAnalysis') %></h2>
         <table>
             <thead>
                 <tr>
-                    <th>القناة</th>
-                    <th>الحملة</th>
-                    <th>إجمالي العملاء</th>
-                    <th>توزيع الحالات</th>
+                    <th><%= __('channel') %></th>
+                    <th><%= __('campaign') %></th>
+                    <th><%= __('totalLeads') %></th>
+                    <th><%= __('statesDistribution') %></th>
                 </tr>
             </thead>
             <tbody>
@@ -70,7 +70,7 @@
                 <tr>
                     <td style="color: var(--text-secondary); font-size: 0.9rem;"><%= c.channel %></td>
                     <td style="font-weight: 600;"><%= c.campaign %></td>
-                    <td style="font-weight: bold; color: var(--accent-color);"><%= c.total %></td>
+                    <td style="font-weight: bold; color: var(--accent-color);"><%= c.total.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></td>
                     <td>
                         <div style="display: flex; height: 8px; width: 150px; border-radius: 4px; overflow: hidden; background: rgba(214, 51, 108, 0.08);">
                             <div style="width: <%= c.total > 0 ? (c.my_fresh/c.total*100) : 0 %>%; background: #10b981;" title="Fresh: <%= c.my_fresh %>"></div>
@@ -88,7 +88,7 @@
 <!-- Print View -->
 <div class="only-print">
     <div class="print-header" style="text-align: center; margin-top: 0.5rem; margin-bottom: 1.5rem;">
-        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;">أداء الحملات والقنوات</h3>
+        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;"><%= __('campaignsChannelsPerformance') %></h3>
     </div>
 
     <div class="table-responsive">
@@ -136,7 +136,7 @@
                 </tr>
                 <% }) %>
                 <tr class="bg-total">
-                    <td colspan="2">Total</td>
+                    <td colspan="2"><%= __('total') %></td>
                     <td><%= totalFresh %></td>
                     <td><%= totalCallback %></td>
                     <td><%= totalFollowUp %></td>
@@ -156,14 +156,14 @@
     </div>
 
     <div class="print-header page-break" style="text-align: center; margin-top: 2rem;">
-        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;">أداء الموظفين</h3>
+        <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;"><%= __('employeesPerformance') %></h3>
     </div>
 
     <div class="table-responsive" style="margin-top: 1rem;">
         <table class="excel-table">
             <thead>
                 <tr>
-                    <th>اسم الموظف</th>
+                    <th><%= __('employeeNameCol') %></th>
                     <th>My Fresh</th>
                     <th>Call Back</th>
                     <th>Follow Up</th>
@@ -176,14 +176,14 @@
                     <th>Schedule meeting</th>
                     <th>Not intersted</th>
                     <th>Wrong Number</th>
-                    <th>إجمالي العملاء</th>
-                    <th>النسبة</th>
+                    <th><%= __('totalLeads') %></th>
+                    <th><%= __('percentage') %></th>
                 </tr>
             </thead>
             <tbody>
                 <% summary.forEach(s => { %>
                 <tr>
-                    <td class="text-right"><%= s.salesman_name || 'غير معروف' %></td>
+                    <td class="text-right"><%= s.salesman_name || __('unknown') %></td>
                     <td><%= s.my_fresh || '' %></td>
                     <td><%= s.callback || '' %></td>
                     <td><%= s.follow_up || '' %></td>
@@ -201,7 +201,7 @@
                 </tr>
                 <% }) %>
                 <tr class="bg-total">
-                    <td>إجمالي</td>
+                    <td><%= __('total') %></td>
                     <td><%= totalFresh %></td>
                     <td><%= totalCallback %></td>
                     <td><%= totalFollowUp %></td>

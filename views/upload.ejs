@@ -1,6 +1,6 @@
 <div class="card">
-    <h1>رفع تقارير مبيعات جديدة</h1>
-    <p style="color: var(--text-secondary); margin-bottom: 2rem;">يمكنك رفع ملف واحد أو عدة ملفات في وقت واحد. يدعم النظام ملفات الإكسل (.xlsx, .xls) والـ CSV.</p>
+    <h1><%= __('uploadTitle') %></h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;"><%= __('uploadSubtitle') %></p>
 
     <form action="/reports/upload" method="POST" enctype="multipart/form-data">
         <!-- Date Picker Section -->
@@ -9,7 +9,7 @@
                 <i class="fas fa-calendar-alt" style="color: var(--accent-color); font-size: 1.2rem;"></i>
             </div>
             <div style="flex: 1;">
-                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">تاريخ التقرير</label>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;"><%= __('reportDate') %></label>
                 <input type="date" name="report_date" id="report-date" required>
             </div>
         </div>
@@ -39,8 +39,8 @@
             <div style="background: var(--accent-light); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid var(--accent-border);">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: var(--accent-color);"></i>
             </div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">اختر الملفات أو اسحبها هنا</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;">اضغط هنا لتصفح جهازك</p>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);"><%= __('dropZoneTitle') %></h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;"><%= __('dropZoneSubtitle') %></p>
             <input type="file" name="reports" id="report-files" style="display: none;" accept=".xlsx, .xls, .csv" required multiple onchange="updateFileList()">
         </label>
         
@@ -50,15 +50,41 @@
         
         <div style="margin-top: 2.5rem; text-align: center;">
             <button type="submit" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem; border-radius: 16px;">
-                <i class="fas fa-magic"></i> &nbsp; بدء المعالجة الذكية
+                <i class="fas fa-magic"></i> &nbsp; <%= __('startProcessing') %>
             </button>
         </div>
     </form>
 </div>
 
+<!-- Funny Upload Processing Overlay -->
+<div id="funny-upload-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 245, 248, 0.98); backdrop-filter: blur(15px); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-primary); transition: all 0.3s ease;">
+    <!-- Animated Loader -->
+    <div class="loader-spinner" style="width: 70px; height: 70px; border: 4px solid rgba(214, 51, 108, 0.1); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: funny-spin 1s linear infinite; margin-bottom: 2rem;"></div>
+    
+    <!-- Custom Diagnostic Title -->
+    <div style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-color); margin-bottom: 0.8rem;"><%= lang === 'en' ? 'Deep Operations Analysis' : 'تحليل العمليات العميق' %></div>
+    
+    <!-- Funny Message -->
+    <div id="funny-msg" style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.5rem; max-width: 80%; line-height: 1.8; height: 60px; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s ease;">
+        🔍 <%= lang === 'en' ? 'Reading the corrupted Sales Excel sheet...' : 'جاري قراءة الشيت المعطوب للـ Sales...' %>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div style="width: 320px; height: 10px; background: rgba(214, 51, 108, 0.08); border-radius: 10px; overflow: hidden; margin-top: 1rem; border: 1px solid var(--accent-border);">
+        <div id="funny-progress" style="width: 0%; height: 100%; background: var(--accent-gradient); border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+    </div>
+</div>
+
+<style>
+    @keyframes funny-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
 <script>
     flatpickr("#report-date", {
-        locale: "ar",
+        locale: "<%= lang %>",
         defaultDate: "today",
         dateFormat: "Y-m-d",
         altInput: true,
@@ -89,7 +115,7 @@
                     </div>
                     <div style="flex: 1;">
                         <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; color: var(--text-primary);">${file.name}</div>
-                        <div style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 500;">${(file.size / 1024).toFixed(1)} KB • جاهز للرفع</div>
+                        <div style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 500;">${(file.size / 1024).toFixed(1)} KB • <%= __('readyToUpload') %></div>
                     </div>
                     <div style="color: #10b981;">
                         <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
@@ -101,19 +127,82 @@
     }
 
     const dropZone = document.getElementById('drop-zone');
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.style.borderColor = 'var(--accent-color)';
-        dropZone.style.background = 'rgba(214, 51, 108, 0.08)';
-    });
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.style.borderColor = 'rgba(214, 51, 108, 0.2)';
-        dropZone.style.background = 'var(--accent-light)';
-    });
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const input = document.getElementById('report-files');
-        input.files = e.dataTransfer.files;
-        updateFileList();
-    });
+    if (dropZone) {
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--accent-color)';
+            dropZone.style.background = 'rgba(214, 51, 108, 0.08)';
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = 'rgba(214, 51, 108, 0.2)';
+            dropZone.style.background = 'var(--accent-light)';
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('report-files');
+            input.files = e.dataTransfer.files;
+            updateFileList();
+        });
+    }
+
+    // Intercept form submission to play the funny loading screen
+    const uploadForm = document.querySelector('form');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', async function(e) {
+            const fileInput = document.getElementById('report-files');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return; // Let standard required validation catch it
+            }
+
+            e.preventDefault(); // Stop instant submission
+            
+            const overlay = document.getElementById('funny-upload-overlay');
+            const funnyMsg = document.getElementById('funny-msg');
+            const progress = document.getElementById('funny-progress');
+            
+            overlay.style.display = 'flex';
+            
+            const steps = [
+                { 
+                    ar: "🔍 جاري قراءة الشيت المعطوب للـ Sales...", 
+                    en: "🔍 Reading the corrupted Sales Excel sheet...",
+                    time: 1400, percent: 20 
+                },
+                { 
+                    ar: "🧮 جاري حساب كمية أرقام التليفونات الناقصة والغلط...", 
+                    en: "🧮 Calculating the amount of wrong/missing phone numbers...",
+                    time: 1400, percent: 45 
+                },
+                { 
+                    ar: "📑 جاري فرز الأعذار الإبداعية التي سيقولها الموظفون هذا الأسبوع...", 
+                    en: "📑 Sorting the creative excuses employees will use this week...",
+                    time: 1600, percent: 70 
+                },
+                { 
+                    ar: "🤖 جاري التأكد من أن جميع العملاء لن يقوموا بالرد على الاتصالات...", 
+                    en: "🤖 Confirming that all clients will avoid our sales calls...",
+                    time: 1600, percent: 90 
+                },
+                { 
+                    ar: "✅ تم الرفع بنجاح! جاهزون لصداع جديد!", 
+                    en: "✅ Upload complete! Ready for a brand new headache!",
+                    time: 1100, percent: 100 
+                }
+            ];
+            
+            const isEnglish = "<%= lang %>" === "en";
+            
+            for (let i = 0; i < steps.length; i++) {
+                funnyMsg.style.opacity = '0';
+                await new Promise(r => setTimeout(r, 150));
+                funnyMsg.innerText = isEnglish ? steps[i].en : steps[i].ar;
+                funnyMsg.style.opacity = '1';
+                progress.style.width = steps[i].percent + '%';
+                await new Promise(r => setTimeout(r, steps[i].time));
+            }
+            
+            // Proceed with actual form submission
+            uploadForm.submit();
+        });
+    }
 </script>

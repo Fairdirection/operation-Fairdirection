@@ -783,3 +783,79 @@ input[readonly].flatpickr-input,
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================
+   Bilingual & LTR Override Rules
+   ========================================== */
+
+/* Left-to-Right layout sidebar adjustment */
+html[dir="ltr"] .sidebar {
+    right: auto;
+    left: 0;
+    border-right: 1px solid var(--glass-border);
+    border-left: none;
+    box-shadow: 10px 0 35px rgba(214, 51, 108, 0.02);
+}
+
+/* Left-to-Right main content margin adjustment */
+html[dir="ltr"] .main-content {
+    margin-right: 0;
+    margin-left: var(--sidebar-width);
+}
+
+/* Table cells and card text-align adjustments */
+html[dir="ltr"] th, 
+html[dir="ltr"] td {
+    text-align: left;
+}
+
+html[dir="ltr"] .text-right {
+    text-align: right !important;
+}
+
+html[dir="ltr"] .text-left {
+    text-align: left !important;
+}
+
+/* Adjust forms or modals with directionality */
+html[dir="ltr"] .member-checkbox-wrapper:hover {
+    transform: translateX(5px) !important;
+}
+
+html[dir="ltr"] .form-group i {
+    left: auto;
+    right: 1.2rem;
+}
+
+/* Adjust input text icons for custom date inputs and searches */
+html[dir="ltr"] .date-container > div i,
+html[dir="ltr"] .form-group i {
+    left: 1.2rem;
+    right: auto;
+}
+
+/* Responsive adjustments for LTR */
+@media (max-width: 768px) {
+    html[dir="ltr"] .sidebar {
+        transform: translateY(100%);
+        right: 0;
+        left: 0;
+        border-top: 1px solid var(--glass-border);
+        border-right: none;
+    }
+    
+    html[dir="ltr"] .sidebar.active {
+        transform: translateY(0);
+    }
+
+    html[dir="ltr"] .main-content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    html[dir="ltr"] .mobile-nav {
+        right: 0;
+        left: 0;
+    }
+}
+

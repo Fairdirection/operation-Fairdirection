@@ -11,6 +11,7 @@ const rateLimit = require('express-rate-limit');
 const db = require('./config/database');
 
 const cookieParser = require('cookie-parser');
+const languageMiddleware = require('./middleware/language');
 const { protect } = require('./middleware/auth');
 
 const app = express();
@@ -38,7 +39,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(languageMiddleware);
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Language Switching Route
+app.get('/set-lang/:lang', (req, res) => {
+  const lang = req.params.lang;
+  if (lang === 'ar' || lang === 'en') {
+    res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: false });
+  }
+  res.redirect(req.get('referer') || '/');
+});
+
 
 // Rate Limiting for Login
 const loginLimiter = rateLimit({
@@ -82,8 +94,10 @@ app.get('/upload', protect, (req, res) => {
 
 const reportRoutes = require('./routes/reports');
 const analyticsRoutes = require('./routes/analytics');
+const teamRoutes = require('./routes/teams');
 app.use('/reports', protect, reportRoutes);
 app.use('/analytics', protect, analyticsRoutes);
+app.use('/teams', protect, teamRoutes);
 
 // Start server
 app.listen(PORT, () => {

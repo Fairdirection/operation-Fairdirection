@@ -1,40 +1,40 @@
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-            <h1>نظرة عامة على الأداء</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem;">متابعة فورية لنتائج المبيعات وحالات العملاء</p>
+            <h1><%= __('performanceOverview') %></h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;"><%= __('performanceSubtitle') %></p>
         </div>
         <div style="background: var(--accent-gradient); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 0.9rem;">
-            عام 2026
+            <%= __('year2026') %>
         </div>
     </div>
     
     <div class="stats-grid">
         <div class="card stat-card">
-            <div class="stat-label">إجمالي العملاء</div>
-            <div class="stat-value"><%= stats.totalLeads.toLocaleString() %></div>
+            <div class="stat-label"><%= __('totalLeads') %></div>
+            <div class="stat-value"><%= stats.totalLeads.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
             <div style="color: #10b981; font-size: 0.8rem; font-weight: bold;">
-                <i class="fas fa-arrow-up"></i> +12% هذا الشهر
+                <i class="fas fa-arrow-up"></i> <%= __('leadsTrend') %>
             </div>
         </div>
         <div class="card stat-card">
-            <div class="stat-label">فريق المبيعات</div>
-            <div class="stat-value"><%= stats.totalSalesmen %></div>
-            <div style="color: var(--text-secondary); font-size: 0.8rem;">موظف نشط</div>
+            <div class="stat-label"><%= __('salesTeam') %></div>
+            <div class="stat-value"><%= stats.totalSalesmen.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;"><%= __('activeEmployee') %></div>
         </div>
         <div class="card stat-card">
-            <div class="stat-label">التقارير المرفوعة</div>
-            <div class="stat-value"><%= stats.totalReports %></div>
-            <div style="color: var(--text-secondary); font-size: 0.8rem;">ملف إكسل</div>
+            <div class="stat-label"><%= __('uploadedReports') %></div>
+            <div class="stat-value"><%= stats.totalReports.toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG') %></div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;"><%= __('excelFile') %></div>
         </div>
     </div>
 </div>
 
 <div class="card" style="padding: 0; overflow: hidden;">
     <div style="padding: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border);">
-        <h2 style="margin-bottom: 0;">أحدث العملاء في النظام</h2>
+        <h2 style="margin-bottom: 0;"><%= __('latestLeads') %></h2>
         <a href="/reports/history" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1.5rem;">
-            <i class="fas fa-list-ul"></i> السجل الكامل
+            <i class="fas fa-list-ul"></i> <%= __('fullHistory') %>
         </a>
     </div>
     
@@ -42,11 +42,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>تاريخ الإنشاء</th>
-                    <th>اسم العميل</th>
-                    <th>اسم البائع</th>
-                    <th>الحالة الحالية</th>
-                    <th>حملة التسويق</th>
+                    <th><%= __('creationDate') %></th>
+                    <th><%= __('clientName') %></th>
+                    <th><%= __('salespersonName') %></th>
+                    <th><%= __('currentState') %></th>
+                    <th><%= __('marketingCampaign') %></th>
                 </tr>
             </thead>
             <tbody>
@@ -59,7 +59,7 @@
                             <div style="width: 30px; height: 30px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--accent-color); font-weight: bold; border: 1px solid var(--accent-border);">
                                 <%= lead.salesman_name ? lead.salesman_name.charAt(0) : '?' %>
                             </div>
-                            <%= lead.salesman_name || 'غير معروف' %>
+                            <%= lead.salesman_name || __('unknown') %>
                         </div>
                     </td>
                     <td>
@@ -74,7 +74,7 @@
                 <tr>
                     <td colspan="5" style="text-align: center; padding: 4rem; color: var(--text-secondary);">
                         <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.2;"></i>
-                        <p>لا توجد بيانات حالية. ابدأ برفع ملفات الإكسل.</p>
+                        <p><%= __('noDataDashboard') %></p>
                     </td>
                 </tr>
                 <% } %>
