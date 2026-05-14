@@ -43,10 +43,11 @@ router.post('/upload', upload.array('reports'), (req, res) => {
         const uploadId = info.lastInsertRowid;
 
         for (const lead of data) {
+          const rawSalesman = lead['Salesman Name'] || lead['اسم البائع'] || 'غير معروف';
           insertLead.run(
             uploadId,
             lead['Request Creation Date'] || lead['تاريخ الإنشاء'] || '-',
-            lead['Salesman Name'] || lead['اسم البائع'] || 'غير معروف',
+            String(rawSalesman).trim(),
             lead['State'] || lead['الحالة'] || 'جديد',
             lead['Last Action'] || lead['آخر إجراء'] || '-',
             lead['Note'] || lead['ملاحظة'] || '-',

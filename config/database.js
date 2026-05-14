@@ -69,6 +69,12 @@ db.exec(`
   );
 `);
 
+// Clean up existing data by trimming whitespace from salesman names
+db.exec(`
+  UPDATE leads SET salesman_name = TRIM(salesman_name) WHERE salesman_name != TRIM(salesman_name);
+  UPDATE team_members SET salesman_name = TRIM(salesman_name) WHERE salesman_name != TRIM(salesman_name);
+`);
+
 // Seed initial user if not exists
 const bcrypt = require('bcryptjs');
 const userExists = db.prepare('SELECT * FROM users WHERE username = ?').get('hanan');

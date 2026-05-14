@@ -101,7 +101,7 @@ router.post('/members/:id', (req, res) => {
         const transaction = db.transaction(() => {
             deleteMembers.run(teamId);
             for (const member of members) {
-                insertMember.run(teamId, member);
+                insertMember.run(teamId, String(member).trim());
             }
         });
 

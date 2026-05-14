@@ -22,7 +22,7 @@ router.get('/total', (req, res) => {
             queryParams.push(teamId);
         }
     } else if (salesmen) {
-        const selectedSalesmen = Array.isArray(salesmen) ? salesmen : [salesmen];
+        const selectedSalesmen = (Array.isArray(salesmen) ? salesmen : [salesmen]).map(s => String(s).trim());
         if (selectedSalesmen.length > 0) {
             const placeholders = selectedSalesmen.map(() => '?').join(',');
             conditions.push(`l.salesman_name IN (${placeholders})`);
