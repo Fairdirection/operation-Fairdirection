@@ -454,6 +454,7 @@ tr:hover td {
         text-overflow: clip !important;
         white-space: normal !important; /* Allow natural wrapping so no text is ever truncated */
         word-break: break-word !important;
+        text-align: center !important;
     }
 
     /* Make headers slightly more compact to ensure the 15 columns fit within A4 page width */
@@ -462,6 +463,7 @@ tr:hover td {
         font-size: 9px !important; /* Slightly smaller header text so they wrap aggressively and shrink columns */
         background: #FFF5F8 !important;
         padding: 4px 1px !important;
+        text-align: center !important;
     }
 
     /* Provide comfortable breathing room only for text columns (Channel, Campaign, Employee name) */
@@ -471,6 +473,7 @@ tr:hover td {
     .excel-table th:first-child {
         padding: 4px 6px !important; /* Generous spacing for text columns */
         font-size: 10px !important;
+        text-align: center !important;
     }
 
     .excel-table .bg-total, .excel-table .bg-total td {
