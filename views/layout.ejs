@@ -32,6 +32,7 @@
                 background-color: #FFFFFF !important;
                 color: #000000 !important;
                 font-size: 10pt !important;
+                font-family: 'Cairo', 'Tajawal', 'Outfit', 'Inter', sans-serif !important;
             }
 
             /* Formal table adjustments */
@@ -54,11 +55,23 @@
             }
         }
     </style>
+    <script>
+        // Immediately restore theme to prevent flash
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
 </head>
 <body>
-    <div class="mobile-header no-print">
-        <img src="/logo.webp" alt="Logo" style="height: 35px;">
-        <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: var(--text-primary);"><%= __('systemName') %></span>
+    <div class="mobile-header no-print" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1.2rem;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="/logo.webp" alt="Logo" style="height: 35px;">
+            <span style="font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: var(--text-primary);"><%= __('systemName') %></span>
+        </div>
+        <button class="theme-toggle-btn" style="background: var(--accent-light); border: 1px solid var(--accent-border); color: var(--accent-color); padding: 8px 12px; border-radius: 12px; cursor: pointer;">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
 
     <div class="sidebar no-print">
@@ -69,7 +82,7 @@
         </div>
         <nav class="sidebar-nav-container">
             <a href="/" class="nav-link <%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>">
-                <i class="fas fa-grid-2"></i> <span><%= __('dashboard') %></span>
+                <i class="fas fa-chart-pie"></i> <span><%= __('dashboard') %></span>
             </a>
             <a href="/upload" class="nav-link <%= typeof page !== 'undefined' && page === 'upload' ? 'active' : '' %>">
                 <i class="fas fa-plus-square"></i> <span><%= __('uploadReports') %></span>
@@ -78,7 +91,7 @@
                 <i class="fas fa-folder-open"></i> <span><%= __('reportsHistory') %></span>
             </a>
             <a href="/analytics/total" class="nav-link <%= typeof page !== 'undefined' && page === 'total' ? 'active' : '' %>">
-                <i class="fas fa-analytics"></i> <span><%= __('cumulativeReport') %></span>
+                <i class="fas fa-chart-line"></i> <span><%= __('cumulativeReport') %></span>
             </a>
             <a href="/teams" class="nav-link <%= typeof page !== 'undefined' && page === 'teams' ? 'active' : '' %>">
                 <i class="fas fa-users"></i> <span><%= __('manageTeams') %></span>
@@ -88,8 +101,11 @@
             </a>
         </nav>
         
-        <!-- Premium Dual-Language Pill Toggle -->
-        <div style="margin: 1.5rem 0 0.5rem; padding: 0 0.5rem; display: flex; justify-content: center;">
+        <!-- Premium Dual-Language Pill & Theme Toggle -->
+        <div style="margin: 1.5rem 0 0.5rem; padding: 0 0.5rem; display: flex; flex-direction: column; gap: 10px;">
+            <button class="theme-toggle-btn sidebar-brand-wrapper" style="width: 100%; background: var(--accent-light); border: 1px solid var(--accent-border); color: var(--accent-color); padding: 10px; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fas fa-moon"></i> <span>المظهر الداكن</span>
+            </button>
             <div style="background: rgba(214, 51, 108, 0.05); border: 1px solid var(--accent-border); padding: 4px; border-radius: 12px; display: flex; width: 100%; gap: 4px;">
                 <a href="/set-lang/ar" style="flex: 1; text-align: center; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 8px; text-decoration: none; color: <%= lang === 'ar' ? 'white' : 'var(--text-secondary)' %>; background: <%= lang === 'ar' ? 'var(--accent-gradient)' : 'transparent' %>; box-shadow: <%= lang === 'ar' ? '0 4px 10px rgba(214, 51, 108, 0.15)' : 'none' %>; transition: all 0.3s ease;">
                     العربية
@@ -108,5 +124,43 @@
     <div class="main-content">
         <%- body %>
     </div>
+
+    <script>
+        // Handle theme toggle clicks
+        document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update icon and text
+                document.querySelectorAll('.theme-toggle-btn').forEach(button => {
+                    const icon = button.querySelector('i');
+                    const text = button.querySelector('span');
+                    if (newTheme === 'dark') {
+                        icon.className = 'fas fa-sun';
+                        if (text) text.textContent = 'المظهر الفاتح';
+                    } else {
+                        icon.className = 'fas fa-moon';
+                        if (text) text.textContent = 'المظهر الداكن';
+                    }
+                });
+            });
+        });
+
+        // Initialize toggle button state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.querySelectorAll('.theme-toggle-btn').forEach(button => {
+                    const icon = button.querySelector('i');
+                    const text = button.querySelector('span');
+                    icon.className = 'fas fa-sun';
+                    if (text) text.textContent = 'المظهر الفاتح';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
     --bg-dark: #FFF5F8; /* Main body background - very soft warm blush white */
@@ -16,11 +16,70 @@
     --shadow-medium: 0 16px 48px rgba(214, 51, 108, 0.08); /* Medium soft shadow for active states */
 }
 
+[data-theme="dark"] {
+    --bg-dark: #0F172A; /* Deep premium slate */
+    --bg-card: #1E293B; /* Elegant dark card */
+    --accent-color: #F43F5E; /* Brilliant rose */
+    --accent-hover: #FB7185;
+    --accent-light: rgba(244, 63, 94, 0.1);
+    --accent-border: rgba(244, 63, 94, 0.2);
+    --accent-gradient: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .mobile-header {
+    background: rgba(30, 41, 59, 0.85);
+}
+
+[data-theme="dark"] .stat-card {
+    background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
+}
+
+[data-theme="dark"] td {
+    background: rgba(30, 41, 59, 0.6);
+}
+
+[data-theme="dark"] .excel-table th {
+    background: #1E293B;
+    color: var(--accent-color);
+    border-color: #334155;
+}
+
+[data-theme="dark"] .excel-table td {
+    background: #0F172A;
+    color: #F8FAFC;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .excel-table .bg-gray {
+    background: #1E293B;
+}
+
+[data-theme="dark"] .excel-table .bg-total {
+    background: #334155;
+}
+
+[data-theme="dark"] .flatpickr-calendar {
+    background: #1E293B !important;
+    border-color: #334155 !important;
+}
+
+[data-theme="dark"] .flatpickr-months,
+[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: #1E293B !important;
+    color: #F8FAFC !important;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Cairo', 'Tajawal', 'Outfit', 'Inter', sans-serif;
 }
 
 body {
@@ -29,6 +88,12 @@ body {
     min-height: 100vh;
     display: flex;
     overflow-x: hidden;
+}
+
+@media screen {
+    body {
+        zoom: 0.75;
+    }
 }
 
 .mobile-header {
@@ -82,6 +147,8 @@ body {
     box-shadow: -10px 0 35px rgba(214, 51, 108, 0.02);
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -388,6 +455,37 @@ tr:hover td {
     word-wrap: break-word;
 }
 
+@media screen {
+    .table-responsive {
+        max-height: 75vh;
+        overflow-y: auto;
+        overflow-x: auto;
+        border: 1px solid var(--accent-border);
+        border-radius: 16px;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .excel-table th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .excel-table th:first-child,
+    .excel-table td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background: var(--bg-card);
+        box-shadow: 2px 0 5px rgba(0,0,0,0.03);
+    }
+
+    .excel-table th:first-child {
+        z-index: 15;
+    }
+}
+
 .btn-premium {
     background: var(--accent-gradient);
     color: white;
@@ -661,10 +759,13 @@ input[readonly].flatpickr-input,
         flex-direction: row !important;
         width: 100%;
         height: 100%;
-        justify-content: space-around;
+        justify-content: flex-start;
         align-items: center;
-        gap: 0;
-        padding: 0 0.5rem;
+        gap: 15px;
+        padding: 0 1rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
     }
     
     .sidebar .nav-link { 
@@ -679,6 +780,7 @@ input[readonly].flatpickr-input,
         box-shadow: none !important;
         color: var(--text-secondary);
         border-radius: 12px;
+        flex-shrink: 0;
     }
     
     .sidebar .nav-link i { 

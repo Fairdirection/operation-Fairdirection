@@ -604,8 +604,16 @@
         <h3 style="border: 1px solid #000; padding: 10px; display: inline-block; color: #000;"><%= __('cumulativeCampaignsPerformance') %> (<%= activeFilterText %>)</h3>
     </div>
 
+    <!-- Instant Client-Side Table Search (No page reload needed) -->
+    <div class="no-print" style="margin-bottom: 1.5rem;">
+        <div style="position: relative; max-width: 400px;">
+            <i class="fas fa-search" style="position: absolute; top: 50%; transform: translateY(-50%); left: <%= lang === 'en' ? '15px' : 'auto' %>; right: <%= lang === 'en' ? 'auto' : '15px' %>; color: var(--accent-color); opacity: 0.7;"></i>
+            <input type="text" id="instantTableSearch" onkeyup="filterInstantTables()" placeholder="<%= lang === 'en' ? 'Instant search in tables...' : 'بحث فوري في الجداول...' %>" style="width: 100%; padding: 12px 40px; border-radius: 14px; border: 1px solid var(--accent-border); background: var(--bg-card); color: var(--text-primary); font-weight: 600; outline: none; box-shadow: var(--shadow-soft);">
+        </div>
+    </div>
+
     <div class="table-responsive">
-        <table class="excel-table">
+        <table class="excel-table" id="campaignsExcelTable">
             <thead>
                 <tr>
                     <th rowspan="2">Channel</th>
@@ -673,7 +681,7 @@
     </div>
 
     <div class="table-responsive" style="margin-top: 1rem;">
-        <table class="excel-table">
+        <table class="excel-table" id="employeesExcelTable">
             <thead>
                 <tr>
                     <th><%= __('employeeNameCol') %></th>
@@ -734,3 +742,31 @@
         </table>
     </div>
 </div>
+
+<script>
+    function filterInstantTables() {
+        const input = document.getElementById('instantTableSearch');
+        if (!input) return;
+        const filter = input.value.toLowerCase().trim();
+        
+        // Filter Campaigns Table
+        const campTable = document.getElementById('campaignsExcelTable');
+        if (campTable) {
+            const trs = campTable.querySelectorAll('tbody tr:not(.bg-total)');
+            trs.forEach(tr => {
+                const text = tr.textContent.toLowerCase();
+                tr.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+        
+        // Filter Employees Table
+        const empTable = document.getElementById('employeesExcelTable');
+        if (empTable) {
+            const trs = empTable.querySelectorAll('tbody tr:not(.bg-total)');
+            trs.forEach(tr => {
+                const text = tr.textContent.toLowerCase();
+                tr.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+    }
+</script>
